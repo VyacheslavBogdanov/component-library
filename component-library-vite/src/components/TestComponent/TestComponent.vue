@@ -60,7 +60,7 @@
 import { ref, computed, onMounted } from 'vue';
 
 import { fetchData } from '../mocks/db.js';
-// import CalendarNavigation from './CalendarNavigation/CalendarNavigation.vue';
+import CalendarNavigation from './CalendarNavigation/CalendarNavigation.vue';
 
 const props = defineProps({
 	startYear: { type: Number, default: new Date().getFullYear() },
