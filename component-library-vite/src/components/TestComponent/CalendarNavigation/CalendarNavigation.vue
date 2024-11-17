@@ -1,11 +1,23 @@
 <template>
 	<div class="calendar-navigation">
-		<div class="month-navigation">
+		<div class="nav-btns">
 			<button class="nav-button" @click="$emit('prevMonth')">ᐸ</button>
 			<span class="month" @click="toggleMonthDropdown">
 				{{ months[currentMonth] }}
 				<div v-if="isMonthDropdownVisible" class="dropdown">
-					<span v-for="(month, index) in months" :key="month" @click="selectMonth(index)">
+					<span v-for="(month, index) in months" :key="index" @click="selectMonth(index)">
+						{{ month }}
+					</span>
+				</div>
+			</span>
+			<button class="nav-button" @click="$emit('nextMonth')">ᐳ</button>
+		</div>
+		<!-- <div class="month-navigation">
+			<button class="nav-button" @click="$emit('prevMonth')">ᐸ</button>
+			<span class="month" @click="toggleMonthDropdown">
+				{{ months[currentMonth] }}
+				<div v-if="isMonthDropdownVisible" class="dropdown">
+					<span v-for="(month, index) in months" :key="index" @click="selectMonth(index)">
 						{{ month }}
 					</span>
 				</div>
@@ -23,7 +35,7 @@
 				</div>
 			</span>
 			<button class="nav-button" @click="$emit('nextYear')">ᐳ</button>
-		</div>
+		</div> -->
 	</div>
 </template>
 

@@ -178,10 +178,9 @@ const isToday = (day: number) => {
 
 const loadData = async () => {
 	try {
-		const people = await fetchData('/people');
-		const months = await fetchData('/months');
-		const daysNames = await fetchData('/days-names');
-		console.log('db DATA', { people, months, daysNames });
+		months.value = await fetchData('/months');
+		dayNames.value = await fetchData('/days-names');
+		console.log('db DATA', { months, dayNames });
 	} catch (error) {
 		console.error(error);
 	}

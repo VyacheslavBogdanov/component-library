@@ -1,13 +1,9 @@
 <template>
 	<h1>Date Picker</h1>
-	<div class="date-picker">
-		<input
-			type="text"
-			v-model="formattedDate"
-			@click="isCalendarVisible = !isCalendarVisible"
-			placeholder="__.__.____ г"
-			class="date-input"
-			maxlength="10"
+	<div class="date-form">
+		<DateForm
+			:formattedDate="formattedDate"
+			@toggleVisible="isCalendarVisible = !isCalendarVisible"
 		/>
 	</div>
 	<div v-if="isCalendarVisible" class="calendar">
@@ -89,6 +85,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import DateForm from './DateForm/DateForm.vue';
 
 const selectedYear = ref<number>(new Date().getFullYear());
 const selectedMonth = ref<number>(new Date().getMonth());
@@ -152,6 +149,8 @@ const formattedDate = computed({
 		}
 	},
 });
+
+console.log('typeof formattedDate', typeof formattedDate);
 
 const toggleMonthDropdown = () => {
 	isMonthDropdownVisible.value = !isMonthDropdownVisible.value;
@@ -240,14 +239,14 @@ $font-family: sans-serif;
 $border-radius: 7px;
 $cursor: pointer;
 
-.date-picker {
+.date-form {
 	position: relative;
 	width: 200px;
 	height: 30px;
 	font-family: $font-family;
 	margin: $date-picker-margin;
 
-	.date-input {
+	.date-form__input {
 		width: 100%;
 		height: 100%;
 		padding: 6px;
