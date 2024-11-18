@@ -7,85 +7,42 @@
 		/>
 	</div>
 	<div v-if="isCalendarVisible" class="calendar">
-		<div class="calendar-header">
-			<div class="header-item">
-				<button class="nav-button" @click="prevMonth">ᐸ</button>
-				<span class="month" @click="toggleMonthDropdown">
-					{{ months[selectedMonth] }}
-					<div v-if="isMonthDropdownVisible" class="month-dropdown">
-						<span
-							v-for="(month, index) in months"
-							:key="month"
-							@click="selectMonth(index)"
-						>
-							{{ month }}
-						</span>
-					</div>
-				</span>
-				<button class="nav-button" @click="nextMonth">ᐳ</button>
-			</div>
-			<div class="header-item">
-				<button class="nav-button" @click="prevYear">ᐸ</button>
-				<span class="year" @click="toggleYearDropdown">
-					{{ selectedYear }}
-					<div v-if="isYearDropdownVisible" class="year-dropdown">
-						<span
-							v-for="year in Array.from(
-								{ length: 21 },
-								(_, i) => selectedYear - 10 + i,
-							)"
-							:key="year"
-							@click="selectYear(year)"
-						>
-							{{ year }}
-						</span>
-					</div>
-				</span>
-				<button class="nav-button" @click="nextYear">ᐳ</button>
-			</div>
-		</div>
-		<div class="day-names">
-			<span v-for="day in dayNames" :key="day" class="day-name">{{ day }}</span>
-		</div>
-		<div class="days">
-			<span
-				v-for="day in prevMonthDays"
-				:key="day"
-				:class="['day', { weekend: isWeekendPrevMonth(day) }]"
-				@click="prevMonth"
-			>
-				<span class="other-month">{{ day }}</span>
-			</span>
-			<span
-				v-for="day in daysInMonth"
-				:key="day"
-				:class="[
-					'day',
-					{
-						selected: day === selectedDay,
-						today: isToday(day),
-						weekend: isWeekendCurrentMonth(day),
-					},
-				]"
-				@click="selectDay(day)"
-			>
-				<span>{{ day }}</span>
-			</span>
-			<span
-				v-for="day in nextMonthDays"
-				:key="day"
-				:class="['day', { weekend: isWeekendNextMonth(day) }]"
-				@click="nextMonth"
-			>
-				<span class="other-month">{{ day }}</span>
-			</span>
-		</div>
+		<CalendarHeader
+			@prevMonth="prevMonth"
+			@toggleMonthDropdown="toggleMonthDropdown"
+			@selectMonth="selectMonth"
+			@nextMonth="nextMonth"
+			@prevYear="prevYear"
+			@toggleYearDropdown="toggleYearDropdown"
+			@nextYear="nextYear"
+			@selectYear="selectYear"
+			:months="months"
+			:selectrdMonth="selectedMonth"
+			:isMonthDropdownVisible="isMonthDropdownVisible"
+			:selectedYear="selectedYear"
+		/>
+		<Days
+			@prevMonth="prevMonth"
+			@selectDay="selectDay"
+			@nextMonth="nextMonth"
+			:dayNames="dayNames"
+			:prevMonthDays="prevMonthDays"
+			:daysInMonth="daysInMonth"
+			:selectedDay="selectedDay"
+			:isWeekendPrevMonth="isWeekendPrevMonth"
+			:isToday="isToday"
+			:isWeekendCurrentMonth="isWeekendCurrentMonth"
+			:nextMonthDays="nextMonthDays"
+			:isWeekendNextMonth="isWeekendNextMonth"
+		/>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import DateForm from './DateForm/DateForm.vue';
+import CalendarHeader from './CalendarHeader/CalendarHeader.vue';
+import Days from './Days/Days.vue';
 
 const selectedYear = ref<number>(new Date().getFullYear());
 const selectedMonth = ref<number>(new Date().getMonth());
@@ -108,6 +65,7 @@ const months = [
 	'Ноябрь',
 	'Декабрь',
 ];
+
 const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 const daysInMonth = computed(() => {
@@ -231,7 +189,7 @@ const isWeekendNextMonth = (day: number) => {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 $border-color: #dcdcdcd2;
 $weekend-color: #e60000;
 $date-picker-margin: 17px;
@@ -245,22 +203,6 @@ $cursor: pointer;
 	height: 30px;
 	font-family: $font-family;
 	margin: $date-picker-margin;
-
-	.date-form__input {
-		width: 100%;
-		height: 100%;
-		padding: 6px;
-		border: 1px solid $border-color;
-		border-radius: $border-radius;
-		font-size: 25px;
-		outline: none;
-		background-image: url('./img/calendar.png');
-		background-size: 20px;
-		background-position: left 17px center;
-		background-repeat: no-repeat;
-		padding-right: 30px;
-		text-indent: 40px;
-	}
 }
 
 .calendar {
@@ -277,108 +219,52 @@ $cursor: pointer;
 	font-family: $font-family;
 	font-weight: 150;
 	margin: $date-picker-margin;
+}
 
-	.calendar-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 10px;
-		padding-left: 7px;
-		padding-right: 7px;
-		width: 445px;
-		height: 70px;
+.day-names {
+	width: 90%;
+	font-size: 20px;
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	text-align: center;
+	margin-bottom: 10px;
+}
 
-		.header-item {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100%;
-		}
+.days {
+	border: 0.5px solid $border-color;
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	width: 90%;
+	height: 70%;
 
-		.month,
-		.year {
-			font-size: 27px;
-			font-weight: bold;
-			position: relative;
-			cursor: $cursor;
-			padding: 0 12px;
-		}
-
-		.nav-button {
-			background: none;
-			border: none;
-			font-size: 23px;
-			cursor: $cursor;
-		}
-
-		.month-dropdown,
-		.year-dropdown {
-			position: absolute;
-			background: white;
-			border: none;
-			padding: 2px;
-			z-index: 2;
-			width: auto;
-			max-height: 240px;
-			overflow-y: auto;
-			opacity: 0.8;
-
-			span {
-				display: block;
-				padding: 5px;
-				cursor: $cursor;
-				&:hover {
-					background: #e6e6e6;
-				}
-			}
-		}
-	}
-
-	.day-names {
-		width: 90%;
-		font-size: 20px;
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		text-align: center;
-		margin-bottom: 10px;
-	}
-
-	.days {
+	.day {
 		border: 0.5px solid $border-color;
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		width: 90%;
-		height: 70%;
+		padding: 8px;
+		cursor: $cursor;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 20px;
 
-		.day {
-			border: 0.5px solid $border-color;
-			padding: 8px;
-			cursor: $cursor;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			font-size: 20px;
+		&.selected {
+			background-color: #5a64f0;
+			color: white;
+		}
 
-			&.selected {
-				background-color: #5a64f0;
-				color: white;
-			}
+		&.today {
+			text-decoration: underline;
+		}
 
-			&.today {
-				text-decoration: underline;
-			}
+		&.weekend {
+			color: $weekend-color;
+		}
 
-			&.weekend {
-				color: $weekend-color;
-			}
+		.other-month {
+			opacity: 0.25;
+		}
 
-			.other-month {
-				opacity: 0.25;
-			}
-
-			&:hover {
-				background-color: #a89aeb60;
-			}
+		&:hover {
+			background-color: #a89aeb60;
 		}
 	}
 }
