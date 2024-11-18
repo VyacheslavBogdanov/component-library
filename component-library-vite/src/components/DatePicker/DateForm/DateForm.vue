@@ -12,7 +12,6 @@
 <script setup lang="ts">
 const props = defineProps({
 	formattedDate: { type: String, required: true },
-	isCalendarVisible: { type: Boolean, required: true },
 });
 
 const emit = defineEmits(['toggleVisible']);

@@ -25,7 +25,7 @@
 			@prevMonth="prevMonth"
 			@selectDay="selectDay"
 			@nextMonth="nextMonth"
-			:dayNames="dayNames"
+			:daysNames="daysNames"
 			:prevMonthDays="prevMonthDays"
 			:daysInMonth="daysInMonth"
 			:selectedDay="selectedDay"
@@ -39,34 +39,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { fetchData } from '../mocks/db.js';
 import DateForm from './DateForm/DateForm.vue';
 import CalendarHeader from './CalendarHeader/CalendarHeader.vue';
 import Days from './Days/Days.vue';
 
 const selectedYear = ref<number>(new Date().getFullYear());
 const selectedMonth = ref<number>(new Date().getMonth());
-const selectedDay = ref<number | null>(null);
+const selectedDay = ref<number>(0);
 const isCalendarVisible = ref<boolean>(false);
 const isMonthDropdownVisible = ref<boolean>(false);
 const isYearDropdownVisible = ref<boolean>(false);
+const months = ref<string[]>([]);
+const daysNames = ref<string[]>([]);
 
-const months = [
-	'Январь',
-	'Февраль',
-	'Март',
-	'Апрель',
-	'Май',
-	'Июнь',
-	'Июль',
-	'Август',
-	'Сентябрь',
-	'Октябрь',
-	'Ноябрь',
-	'Декабрь',
-];
+const loadData = async () => {
+	try {
+		months.value = await fetchData('/months');
+		daysNames.value = await fetchData('/days-names');
+		console.log('db DATA', { months, daysNames });
+	} catch (error) {
+		console.error(error);
+	}
+};
 
-const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+onMounted(() => {
+	loadData();
+});
 
 const daysInMonth = computed(() => {
 	const days = new Date(selectedYear.value, selectedMonth.value + 1, 0).getDate();
@@ -87,8 +87,6 @@ const nextMonthDays = computed(() => {
 
 const formattedDate = computed({
 	get: () => {
-		console.log('GET');
-
 		if (selectedDay.value === null) return '';
 		const dateFormat = `${String(selectedDay.value).padStart(2, '0')}.${String(selectedMonth.value + 1).padStart(2, '0')}.${selectedYear.value}`;
 		return dateFormat;
@@ -107,8 +105,6 @@ const formattedDate = computed({
 		}
 	},
 });
-
-console.log('typeof formattedDate', typeof formattedDate);
 
 const toggleMonthDropdown = () => {
 	isMonthDropdownVisible.value = !isMonthDropdownVisible.value;

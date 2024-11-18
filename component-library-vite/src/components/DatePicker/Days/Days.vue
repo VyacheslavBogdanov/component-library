@@ -41,7 +41,7 @@
 const emit = defineEmits(['prevMonth', 'selectDay', 'nextMonth']);
 
 const props = defineProps({
-	dayNames: { type: Array, default: [] },
+	daysNames: { type: Array, default: [] },
 	prevMonthDays: { type: Array, required: true },
 	daysInMonth: { type: Array, required: true },
 	selectedDay: { type: Number, required: true },
