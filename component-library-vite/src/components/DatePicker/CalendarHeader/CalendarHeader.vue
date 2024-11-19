@@ -50,8 +50,9 @@ const emit = defineEmits([
 
 const props = defineProps({
 	months: { type: Array, default: [] },
-	selectrdMonth: { type: Number, required: true },
+	selectedMonth: { type: Number, required: true },
 	isMonthDropdownVisible: { type: Boolean, required: true },
+	isYearDropdownVisible: { type: Boolean, required: true },
 	selectedYear: { type: Number, required: true },
 });
 </script>

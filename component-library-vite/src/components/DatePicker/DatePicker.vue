@@ -17,8 +17,9 @@
 			@nextYear="nextYear"
 			@selectYear="selectYear"
 			:months="months"
-			:selectrdMonth="selectedMonth"
+			:selectedMonth="selectedMonth"
 			:isMonthDropdownVisible="isMonthDropdownVisible"
+			:isYearDropdownVisible="isYearDropdownVisible"
 			:selectedYear="selectedYear"
 		/>
 		<Days
@@ -29,11 +30,9 @@
 			:prevMonthDays="prevMonthDays"
 			:daysInMonth="daysInMonth"
 			:selectedDay="selectedDay"
-			:isWeekendPrevMonth="isWeekendPrevMonth"
-			:isToday="isToday"
-			:isWeekendCurrentMonth="isWeekendCurrentMonth"
 			:nextMonthDays="nextMonthDays"
-			:isWeekendNextMonth="isWeekendNextMonth"
+			:selectedYear="selectedYear"
+			:selectedMonth="selectedMonth"
 		/>
 	</div>
 </template>
@@ -159,31 +158,9 @@ const prevYear = () => {
 const nextYear = () => {
 	selectedYear.value += 1;
 };
-
-const isToday = (day: number) => {
-	const today = new Date();
-	return (
-		today.getFullYear() === selectedYear.value &&
-		today.getMonth() === selectedMonth.value &&
-		today.getDate() === day
-	);
-};
-
-const isWeekendCurrentMonth = (day: number) => {
-	const date = new Date(selectedYear.value, selectedMonth.value, day);
-	return date.getDay() === 6 || date.getDay() === 0;
-};
-
-const isWeekendPrevMonth = (day: number) => {
-	const date = new Date(selectedYear.value, selectedMonth.value - 1, day);
-	return date.getDay() === 6 || date.getDay() === 0;
-};
-
-const isWeekendNextMonth = (day: number) => {
-	const date = new Date(selectedYear.value, selectedMonth.value + 1, day);
-	return date.getDay() === 6 || date.getDay() === 0;
-};
 </script>
+
+// Как передать переменные во все дочерние компоненты? Миксины?
 
 <style lang="scss">
 $border-color: #dcdcdcd2;
