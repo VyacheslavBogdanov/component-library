@@ -1,70 +1,79 @@
 <template>
-    <div class="search-container">
-        <input
-            required
-            type="text"
-            v-model="searchQuery"
-            @blur="handleBlur"
-            :class="{ 'has-dropdown': searchQuery && filteredList.length }"
-        />
-        <label class="placeholder">Поиск</label>
-        <div class="iconsearch"></div>
-        <Dropdown v-if="filteredList.length" 
-                  :items="filteredList"
-                  :highlightMatch="highlightMatch"
-                  @select="selectItem" />
-    </div>
+	<div class="search-container">
+		<input
+			required
+			type="text"
+			v-model="searchQuery"
+			@blur="handleBlur"
+			:class="{ 'has-dropdown': searchQuery && filteredList.length }"
+		/>
+		<label class="placeholder">Поиск</label>
+		<div class="iconsearch"></div>
+		<Dropdown
+			v-if="showDropdown"
+			:items="filteredList"
+			:highlightMatch="highlightMatch"
+			@select="selectItem"
+		/>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { people } from '../mocks/db.js';
+import { people } from '../mocks/db';
 import Dropdown from './Dropdown.vue';
 
 const searchQuery = ref<string>('');
-const filteredList = ref<string[]>([]);
+const filteredList = ref<{ id: string; name: string }[]>([]);
+const showDropdown = ref(false);
 
-function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-    return function (...args: any[]) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            func(...args);
-        }, wait);
-    };
+function debounce<T extends (...args: any[]) => void>(
+	func: T,
+	wait: number,
+): (...args: Parameters<T>) => void {
+	let timeout: ReturnType<typeof setTimeout> | undefined;
+	return function (...args: any[]) {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => func(...args), wait);
+	};
 }
 
 const updateFilteredList = debounce(() => {
-    filteredList.value = people.filter((item) =>
-        item.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
-    );
-}, 500);
+	filteredList.value = people.filter((item) =>
+		item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
+	);
+	showDropdown.value = !!filteredList.value.length;
+}, 300);
 
 watch(searchQuery, () => {
-    updateFilteredList();
+	updateFilteredList();
 });
 
 const handleBlur = () => {
-    searchQuery.value = '';
+	showDropdown.value = false; 
 };
 
-const highlightMatch = (item: string) => {
-    if (!searchQuery.value) return [{ text: item, highlighted: false }];
-    
-    const regex = new RegExp(`^(${searchQuery.value})`, 'i');
-    const parts = item.split(regex);
-    
-    return parts.map((part, index) => ({
-        text: part,
-        highlighted: index % 2 === 1
-    }));
+
+const highlightMatch = (item: string): { text: string; highlighted: boolean }[] => {
+	if (!searchQuery.value) return [{ text: item, highlighted: false }];
+
+	const regex = new RegExp(`^(${searchQuery.value})`, 'i');
+	const parts = item.split(regex);
+
+	return parts.map((part, index) => ({
+		text: part,
+		highlighted: index % 2 === 1
+	}));
 };
 
-const selectItem = (item: string) => {
-    searchQuery.value = item;
+
+const selectItem = (item: { id: string; name: string }) => {
+	searchQuery.value = item.name; 
+	showDropdown.value = false; 
+
+	console.log('Selected ID:', item.id);
 };
 </script>
-
 
 <style lang="scss" scoped>
 
@@ -178,44 +187,11 @@ $font-allelement: sans-serif;
 		}
 	}
 
-	.dropdown {
-		background-color: white;
-		border: 1.5px solid $border-color-focus;
-		border-radius: 0 0 4px 4px;
-		min-height: $min-height-dropdown;
-		max-height: $max-height-dropdown;
-		overflow-y: auto;
-		max-width: $width-container;
-		position: relative;
-		border-top: none;
-		top: 100%;
-
-		.dropdown-list {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-
-			li {
-				margin: $margin-li;
-				cursor: pointer;
-				text-align: start;
-				background-color: #dcb9fa;
-				position: relative;
-				font-size: $font-size-container;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				font-family: $font-allelement;
-
-				&:hover {
-					background-color: #9f979773;
-				}
+	
 				.highlighted {
                  font-weight: bold; 
 				
 			}
 		}
-	}
-}
-}
+	
 </style>
