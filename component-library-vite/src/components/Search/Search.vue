@@ -1,5 +1,5 @@
 <template>
-	<div class="search-container">
+	<div class="search">
 		<input
 			required
 			type="text"
@@ -19,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
+
 import { ref, watch } from 'vue';
 import { people } from '../mocks/db.d';
 import Dropdown from './Dropdown.vue';
-
 
 interface Person {
 	id: string;
@@ -99,18 +99,15 @@ $height-input-icon: $height-input * 0.5;
 $margin-li: 13px;
 $font-allelement: sans-serif;
 
-.search-container {
+.search{
 	max-width: $width-container;
-	position: relative;
-	margin-left: 16px;
-	margin-right: 16px;
-	margin-top: 24px;
-	margin-bottom: 24px;
+	display: flex;
+	
 
 	input[type='text'] {
 		position: relative;
 		font-family: $font-allelement;
-		width: 100%;
+		width: 80%;
 		height: $height-input;
 		font-size: $font-size-container;
 		border: 1.5px solid #9f979773;
@@ -196,12 +193,7 @@ $font-allelement: sans-serif;
 			transform: rotate(-45deg) translate(-0px, +7px);
 			transition: background-color 0.2s;
 		}
-	}
-
 	
-				.highlighted {
-                 font-weight: bold; 
-				
 			}
 		}
 	
