@@ -1,6 +1,6 @@
 const PORT = 3003;
 
-const people = [
+export const mockItems = [
 	'Смирнов А.В.',
 	'Иванов Д.С.',
 	'Кузнецов Е.М.',

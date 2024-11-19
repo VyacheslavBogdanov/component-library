@@ -1,128 +1,92 @@
 <template>
-	<h1>Поиск</h1>
-	<div class="search-container">
-		<input
-			required
-			type="text"
-			v-model="searchQuery"
-			@blur="handleBlur"
-			:class="{ 'has-dropdown': searchQuery && filteredList.length }"
-		/>
-		<label class="placeholder">Поиск</label>
-		<div class="iconsearch"></div>
-		<div v-if="searchQuery && filteredList.length" class="dropdown">
-			<ul class="dropdown-list">
-				<li
-					v-for="(item, index) in filteredList"
-					:key="index"
-					@mousedown.prevent="selectItem(item)"
-				>
-					<span v-html="highlightMatch(item)"></span>
-				</li>
-			</ul>
-		</div>
-	</div>
+    <div class="search-container">
+        <input
+            required
+            type="text"
+            v-model="searchQuery"
+            @blur="handleBlur"
+            :class="{ 'has-dropdown': searchQuery && filteredList.length }"
+        />
+        <label class="placeholder">Поиск</label>
+        <div class="iconsearch"></div>
+        <div v-if="searchQuery && filteredList.length" class="dropdown">
+            <ul class="dropdown-list">
+                <li
+                    v-for="(item, index) in filteredList"
+                    :key="index"
+                    @mousedown.prevent="selectItem(item)"
+                >
+                    <span v-for="(part, partIndex) in highlightMatch(item)"
+                          :key="partIndex"
+                          :class="{ 'highlighted': part.highlighted }">
+                        {{ part.text }}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { people } from '../mocks/db.js'; 
 
 const searchQuery = ref<string>('');
 const filteredList = ref<string[]>([]);
 
-const items = ref<string[]>([
-	'Смирнов А.В.',
-	'Иванов Д.С.',
-	'Кузнецов Е.М.',
-	'Попов Н.А.',
-	'Лебедев И.П.',
-	'Козлов В.Н.',
-	'Новиков А.Д.',
-	'Морозов С.А.',
-	'Петров Е.В.',
-	'Васильев А.С.',
-	'Соколов В.И.',
-	'Михайлов О.В.',
-	'Фёдоров Д.Л.',
-	'Орлов И.К.',
-	'Волков А.А.',
-	'Андреев П.С.',
-	'Никитин О.В.',
-	'Захаров А.И.',
-	'Куликов Д.П.',
-	'Александров С.В.',
-	'Дмитриев В.Н.',
-	'Ковалёв Е.М.',
-	'Ситников Л.П.',
-	'Григорьев В.Д.',
-	'Гордеев А.С.',
-	'Антонов И.Н.',
-	'Ефимов В.П.',
-	'Тимофеев Д.В.',
-	'Филиппов Е.С.',
-	'Макаров О.А.',
-	'Сидоров В.Д.',
-	'Чернов И.П.',
-	'Савельев Н.В.',
-	'Павлов А.С.',
-	'Богданов С.К.',
-	'Мартынов Е.В.',
-	'Воробьёв А.М.',
-	'Антипов Д.А.',
-	'Тарасов В.О.',
-	'Беляев Л.В.',
-	'Комаров И.С.',
-	'Мельников Е.К.',
-	'Шевченко С.В.',
-	'Емельянов О.П.',
-	'Князев В.А.',
-	'Белов Е.И.',
-	'Щербаков С.Д.',
-	'Назаров Д.В.',
-	'Кочетов О.С.',
-	'Афанасьев Н.А.',
-]);
+const debounce = (func: Function, wait: number) => {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    return (...args: any[]) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func(...args);
+        }, wait);
+    };
+};
 
-function debounce<T extends (...args: any[]) => void>(
-	func: T,
-	wait: number,
-): (...args: Parameters<T>) => void {
-	let timeout: ReturnType<typeof setTimeout> | undefined;
-	return function (...args: any[]) {
-		clearTimeout(timeout);
-		timeout = setTimeout(() => {
-			func(...args);
-		}, wait);
-	};
+const filterItems = (query: string) => {
+    return people.filter((item) =>
+        item.toLowerCase().startsWith(query.toLowerCase())
+    );
 }
 
 const updateFilteredList = debounce(() => {
-	filteredList.value = items.value.filter((item) =>
-		item.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
-	);
+    if (searchQuery.value) {
+        filteredList.value = filterItems(searchQuery.value);
+    } else {
+        filteredList.value = [];
+    }
 }, 500);
 
 watch(searchQuery, () => {
-	updateFilteredList();
+    updateFilteredList();
 });
 
 const handleBlur = () => {
-	searchQuery.value = '';
+    searchQuery.value = '';
 };
 
-const highlightMatch = (item: string): string => {
-	if (!searchQuery.value) return item;
-
-	const regex = new RegExp(`^(${searchQuery.value})`, 'i');
-	return item.replace(regex, '<b>$1</b>');
+const highlightMatch = (item: string): Array<{ text: string; highlighted: boolean }> => {
+    if (!searchQuery.value) return [{ text: item, highlighted: false }];
+    
+    const parts = item.split(new RegExp(`^(${searchQuery.value})`, 'i'));
+    
+    return parts.map((part, index) => ({
+        text: part,
+        highlighted: index % 2 === 1,
+    }));
 };
 
 const selectItem = (item: string) => {
-	searchQuery.value = item;
+    searchQuery.value = item;
 };
 </script>
 
+
+
 <style lang="scss" scoped>
+
+
 $border-color-focus: #007bff;
 $width-container: 450px;
 $font-size-container: 22px;
@@ -264,12 +228,12 @@ $font-allelement: sans-serif;
 				&:hover {
 					background-color: #9f979773;
 				}
-
-				b {
-					font-weight: bold;
-				}
+				.highlighted {
+                 font-weight: bold; 
+				
 			}
 		}
 	}
+}
 }
 </style>
