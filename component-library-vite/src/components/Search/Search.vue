@@ -9,53 +9,35 @@
         />
         <label class="placeholder">Поиск</label>
         <div class="iconsearch"></div>
-        <div v-if="searchQuery && filteredList.length" class="dropdown">
-            <ul class="dropdown-list">
-                <li
-                    v-for="(item, index) in filteredList"
-                    :key="index"
-                    @mousedown.prevent="selectItem(item)"
-                >
-                    <span v-for="(part, partIndex) in highlightMatch(item)"
-                          :key="partIndex"
-                          :class="{ 'highlighted': part.highlighted }">
-                        {{ part.text }}
-                    </span>
-                </li>
-            </ul>
-        </div>
+        <Dropdown v-if="filteredList.length" 
+                  :items="filteredList"
+                  :highlightMatch="highlightMatch"
+                  @select="selectItem" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { people } from '../mocks/db.js'; 
+import { people } from '../mocks/db.js';
+import Dropdown from './Dropdown.vue';
 
 const searchQuery = ref<string>('');
 const filteredList = ref<string[]>([]);
 
-const debounce = (func: Function, wait: number) => {
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
     let timeout: ReturnType<typeof setTimeout> | undefined;
-    return (...args: any[]) => {
+    return function (...args: any[]) {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             func(...args);
         }, wait);
     };
-};
-
-const filterItems = (query: string) => {
-    return people.filter((item) =>
-        item.toLowerCase().startsWith(query.toLowerCase())
-    );
 }
 
 const updateFilteredList = debounce(() => {
-    if (searchQuery.value) {
-        filteredList.value = filterItems(searchQuery.value);
-    } else {
-        filteredList.value = [];
-    }
+    filteredList.value = people.filter((item) =>
+        item.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
+    );
 }, 500);
 
 watch(searchQuery, () => {
@@ -66,14 +48,15 @@ const handleBlur = () => {
     searchQuery.value = '';
 };
 
-const highlightMatch = (item: string): Array<{ text: string; highlighted: boolean }> => {
+const highlightMatch = (item: string) => {
     if (!searchQuery.value) return [{ text: item, highlighted: false }];
     
-    const parts = item.split(new RegExp(`^(${searchQuery.value})`, 'i'));
+    const regex = new RegExp(`^(${searchQuery.value})`, 'i');
+    const parts = item.split(regex);
     
     return parts.map((part, index) => ({
         text: part,
-        highlighted: index % 2 === 1,
+        highlighted: index % 2 === 1
     }));
 };
 
@@ -81,7 +64,6 @@ const selectItem = (item: string) => {
     searchQuery.value = item;
 };
 </script>
-
 
 
 <style lang="scss" scoped>
