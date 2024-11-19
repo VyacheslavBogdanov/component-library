@@ -38,14 +38,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 const emit = defineEmits(['prevMonth', 'selectDay', 'nextMonth']);
 
 const props = defineProps({
 	daysNames: { type: Array, default: [] },
-	prevMonthDays: { type: Array, required: true },
-	daysInMonth: { type: Array, required: true },
 	selectedDay: { type: Number, required: true },
-	nextMonthDays: { type: Array, required: true },
 	selectedYear: { type: Number, required: true },
 	selectedMonth: { type: Number, required: true },
 });
@@ -73,6 +71,78 @@ const isWeekendNextMonth = (day: any) => {
 	const date = new Date(props.selectedYear, props.selectedMonth + 1, day);
 	return date.getDay() === 6 || date.getDay() === 0;
 };
+
+const daysInMonth = computed(() => {
+	const days = new Date(props.selectedYear, props.selectedMonth + 1, 0).getDate();
+	return Array.from({ length: days }, (_, i) => i + 1);
+});
+
+const prevMonthDays = computed(() => {
+	const firstDayOfMonth = new Date(props.selectedYear, props.selectedMonth, 1).getDay();
+	const prevMonthDate = new Date(props.selectedYear, props.selectedMonth, 0).getDate();
+	return Array.from({ length: (firstDayOfMonth + 6) % 7 }, (_, i) => prevMonthDate - i).reverse();
+});
+
+const nextMonthDays = computed(() => {
+	const daysInCurrentMonth = daysInMonth.value.length;
+	const remainingDays = 42 - daysInCurrentMonth - prevMonthDays.value.length;
+	return Array.from({ length: remainingDays }, (_, i) => i + 1);
+});
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+$border-color: #dcdcdcd2;
+$weekend-color: #e60000;
+$date-picker-margin: 17px;
+$font-family: sans-serif;
+$border-radius: 7px;
+$cursor: pointer;
+
+.day-names {
+	width: 90%;
+	font-size: 20px;
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.days {
+	border: 0.5px solid $border-color;
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	width: 90%;
+	height: 70%;
+
+	.day {
+		border: 0.5px solid $border-color;
+		padding: 8px;
+		cursor: $cursor;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 20px;
+
+		&.selected {
+			background-color: #5a64f0;
+			color: white;
+		}
+
+		&.today {
+			text-decoration: underline;
+		}
+
+		&.weekend {
+			color: $weekend-color;
+		}
+
+		.other-month {
+			opacity: 0.25;
+		}
+
+		&:hover {
+			background-color: #a89aeb60;
+		}
+	}
+}
+</style>

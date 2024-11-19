@@ -1,5 +1,3 @@
-const PORT = 3003;
-
 const people = [
 	'Смирнов А.В.',
 	'Иванов Д.С.',
@@ -88,8 +86,7 @@ const mockAPI = (endpoint) => {
 
 export const fetchData = async (endpoint) => {
 	try {
-		const data = await mockAPI(endpoint);
-		return data;
+		return await mockAPI(endpoint);
 	} catch (error) {
 		console.error(`Error fetching data from ${endpoint}:`, error);
 		throw error;

@@ -1,60 +1,62 @@
 <template>
 	<div class="calendar-header">
 		<div class="header-item">
-			<button class="nav-button" @click="emit('prevMonth')">ᐸ</button>
-			<span class="month" @click="emit('toggleMonthDropdown')">
+			<button class="nav-button" @click="emit('ToggleHeaderDate', 'month', 'prev')">ᐸ</button>
+			<span class="month" @click="isMonthDropdownVisible = !isMonthDropdownVisible">
 				{{ months[selectedMonth] }}
 				<div v-if="isMonthDropdownVisible" class="month-dropdown">
 					<span
 						v-for="(month, index) in months"
 						:key="index"
-						@click="emit('selectMonth', index)"
+						@click="SelectHeaderDate(index, 'month')"
 					>
 						{{ month }}
 					</span>
 				</div>
 			</span>
-			<button class="nav-button" @click="emit('nextMonth')">ᐳ</button>
+			<button class="nav-button" @click="emit('ToggleHeaderDate', 'month', 'next')">ᐳ</button>
 		</div>
 		<div class="header-item">
-			<button class="nav-button" @click="emit('prevYear')">ᐸ</button>
-			<span class="year" @click="emit('toggleYearDropdown')">
+			<button class="nav-button" @click="emit('ToggleHeaderDate', 'year', 'prev')">ᐸ</button>
+			<span class="year" @click="isYearDropdownVisible = !isYearDropdownVisible">
 				{{ selectedYear }}
 				<div v-if="isYearDropdownVisible" class="year-dropdown">
 					<span
 						v-for="year in Array.from({ length: 21 }, (_, i) => selectedYear - 10 + i)"
 						:key="year"
-						@click="emit('selectYear', year)"
+						@click="SelectHeaderDate(year, 'year')"
 					>
 						{{ year }}
 					</span>
 				</div>
 			</span>
-			<button class="nav-button" @click="emit('nextYear')">ᐳ</button>
+			<button class="nav-button" @click="emit('ToggleHeaderDate', 'year', 'next')">ᐳ</button>
 		</div>
 	</div>
 	<Days />
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits([
-	'prevMonth',
-	'toggleMonthDropdown',
-	'selectMonth',
-	'nextMonth',
-	'prevYear',
-	'toggleYearDropdown',
-	'nextYear',
-	'selectYear',
-]);
+import { ref } from 'vue';
+const emit = defineEmits(['ToggleHeaderDate', 'changeSelectedMonth', 'changeSelectedYear']);
 
 const props = defineProps({
 	months: { type: Array, default: [] },
-	selectedMonth: { type: Number, required: true },
-	isMonthDropdownVisible: { type: Boolean, required: true },
-	isYearDropdownVisible: { type: Boolean, required: true },
 	selectedYear: { type: Number, required: true },
+	selectedMonth: { type: Number, required: true },
 });
+
+const isMonthDropdownVisible = ref<boolean>(false);
+const isYearDropdownVisible = ref<boolean>(false);
+
+const SelectHeaderDate = (value: number, type: 'month' | 'year') => {
+	emit(type === 'month' ? 'changeSelectedMonth' : 'changeSelectedYear', value);
+	setTimeout(() => {
+		type === 'month'
+			? (isMonthDropdownVisible.value = false)
+			: (isYearDropdownVisible.value = false);
+	});
+};
 </script>
 
 <style lang="scss" scoped>

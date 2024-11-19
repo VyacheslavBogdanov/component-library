@@ -8,29 +8,18 @@
 	</div>
 	<div v-if="isCalendarVisible" class="calendar">
 		<CalendarHeader
-			@prevMonth="prevMonth"
-			@toggleMonthDropdown="toggleMonthDropdown"
-			@selectMonth="selectMonth"
-			@nextMonth="nextMonth"
-			@prevYear="prevYear"
-			@toggleYearDropdown="toggleYearDropdown"
-			@nextYear="nextYear"
-			@selectYear="selectYear"
+			@ToggleHeaderDate="ToggleHeaderDate"
+			@changeSelectedMonth="(value) => (selectedMonth = value)"
+			@changeSelectedYear="(value) => (selectedYear = value)"
 			:months="months"
-			:selectedMonth="selectedMonth"
-			:isMonthDropdownVisible="isMonthDropdownVisible"
-			:isYearDropdownVisible="isYearDropdownVisible"
 			:selectedYear="selectedYear"
+			:selectedMonth="selectedMonth"
 		/>
 		<Days
-			@prevMonth="prevMonth"
-			@selectDay="selectDay"
-			@nextMonth="nextMonth"
+			@ToggleHeaderDate="ToggleHeaderDate"
+			@selectDay="(day) => (selectedDay = day)"
 			:daysNames="daysNames"
-			:prevMonthDays="prevMonthDays"
-			:daysInMonth="daysInMonth"
 			:selectedDay="selectedDay"
-			:nextMonthDays="nextMonthDays"
 			:selectedYear="selectedYear"
 			:selectedMonth="selectedMonth"
 		/>
@@ -48,8 +37,6 @@ const selectedYear = ref<number>(new Date().getFullYear());
 const selectedMonth = ref<number>(new Date().getMonth());
 const selectedDay = ref<number>(0);
 const isCalendarVisible = ref<boolean>(false);
-const isMonthDropdownVisible = ref<boolean>(false);
-const isYearDropdownVisible = ref<boolean>(false);
 const months = ref<string[]>([]);
 const daysNames = ref<string[]>([]);
 
@@ -57,7 +44,6 @@ const loadData = async () => {
 	try {
 		months.value = await fetchData('/months');
 		daysNames.value = await fetchData('/days-names');
-		console.log('db DATA', { months, daysNames });
 	} catch (error) {
 		console.error(error);
 	}
@@ -67,27 +53,11 @@ onMounted(() => {
 	loadData();
 });
 
-const daysInMonth = computed(() => {
-	const days = new Date(selectedYear.value, selectedMonth.value + 1, 0).getDate();
-	return Array.from({ length: days }, (_, i) => i + 1);
-});
-
-const prevMonthDays = computed(() => {
-	const firstDayOfMonth = new Date(selectedYear.value, selectedMonth.value, 1).getDay();
-	const prevMonthDate = new Date(selectedYear.value, selectedMonth.value, 0).getDate();
-	return Array.from({ length: (firstDayOfMonth + 6) % 7 }, (_, i) => prevMonthDate - i).reverse();
-});
-
-const nextMonthDays = computed(() => {
-	const daysInCurrentMonth = daysInMonth.value.length;
-	const remainingDays = 42 - daysInCurrentMonth - prevMonthDays.value.length;
-	return Array.from({ length: remainingDays }, (_, i) => i + 1);
-});
-
 const formattedDate = computed({
 	get: () => {
-		if (selectedDay.value === null) return '';
-		const dateFormat = `${String(selectedDay.value).padStart(2, '0')}.${String(selectedMonth.value + 1).padStart(2, '0')}.${selectedYear.value}`;
+		if (selectedDay.value === 0) return '';
+		const dateFormat = `${String(selectedDay.value).padStart(2, '0')}
+		.${String(selectedMonth.value + 1).padStart(2, '0')}.${selectedYear.value}`;
 		return dateFormat;
 	},
 	set: (value: string) => {
@@ -105,58 +75,30 @@ const formattedDate = computed({
 	},
 });
 
-const toggleMonthDropdown = () => {
-	isMonthDropdownVisible.value = !isMonthDropdownVisible.value;
-	isYearDropdownVisible.value = false;
-};
-
-const toggleYearDropdown = () => {
-	isYearDropdownVisible.value = !isYearDropdownVisible.value;
-	isMonthDropdownVisible.value = false;
-};
-
-const selectMonth = (month: number) => {
-	selectedMonth.value = month;
-	setTimeout(() => {
-		isMonthDropdownVisible.value = false;
-	});
-};
-
-const selectYear = (year: number) => {
-	selectedYear.value = year;
-	setTimeout(() => {
-		isYearDropdownVisible.value = false;
-	});
-};
-
-const selectDay = (day: number) => {
-	selectedDay.value = day;
-};
-
-const prevMonth = () => {
-	if (selectedMonth.value === 0) {
-		selectedMonth.value = 11;
-		selectedYear.value -= 1;
-	} else {
-		selectedMonth.value -= 1;
+const ToggleHeaderDate = (type: string, route: string) => {
+	if (type === 'month') {
+		if (route === 'prev') {
+			if (selectedMonth.value === 0) {
+				selectedMonth.value = 11;
+				selectedYear.value -= 1;
+			} else {
+				selectedMonth.value -= 1;
+			}
+		} else if (route === 'next') {
+			if (selectedMonth.value === 11) {
+				selectedMonth.value = 0;
+				selectedYear.value += 1;
+			} else {
+				selectedMonth.value += 1;
+			}
+		}
+	} else if (type === 'year') {
+		if (route === 'prev') {
+			selectedYear.value -= 1;
+		} else if (route === 'next') {
+			selectedYear.value += 1;
+		}
 	}
-};
-
-const nextMonth = () => {
-	if (selectedMonth.value === 11) {
-		selectedMonth.value = 0;
-		selectedYear.value += 1;
-	} else {
-		selectedMonth.value += 1;
-	}
-};
-
-const prevYear = () => {
-	selectedYear.value -= 1;
-};
-
-const nextYear = () => {
-	selectedYear.value += 1;
 };
 </script>
 
@@ -192,53 +134,5 @@ $cursor: pointer;
 	font-family: $font-family;
 	font-weight: 150;
 	margin: $date-picker-margin;
-}
-
-.day-names {
-	width: 90%;
-	font-size: 20px;
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	text-align: center;
-	margin-bottom: 10px;
-}
-
-.days {
-	border: 0.5px solid $border-color;
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	width: 90%;
-	height: 70%;
-
-	.day {
-		border: 0.5px solid $border-color;
-		padding: 8px;
-		cursor: $cursor;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		font-size: 20px;
-
-		&.selected {
-			background-color: #5a64f0;
-			color: white;
-		}
-
-		&.today {
-			text-decoration: underline;
-		}
-
-		&.weekend {
-			color: $weekend-color;
-		}
-
-		.other-month {
-			opacity: 0.25;
-		}
-
-		&:hover {
-			background-color: #a89aeb60;
-		}
-	}
 }
 </style>
