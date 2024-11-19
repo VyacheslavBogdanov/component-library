@@ -20,36 +20,46 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { people } from '../mocks/db';
+import { people } from '../mocks/db.d';
 import Dropdown from './Dropdown.vue';
 
-const searchQuery = ref<string>('');
-const filteredList = ref<{ id: string; name: string }[]>([]);
-const showDropdown = ref(false);
+
+interface Person {
+	id: string;
+	name: string;
+}
+
+
+const searchQuery = ref<string>(''); 
+const filteredList = ref<Person[]>([]); 
+const showDropdown = ref<boolean>(false); 
 
 function debounce<T extends (...args: any[]) => void>(
 	func: T,
 	wait: number,
 ): (...args: Parameters<T>) => void {
 	let timeout: ReturnType<typeof setTimeout> | undefined;
-	return function (...args: any[]) {
+	return function (...args: Parameters<T>) {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => func(...args), wait);
 	};
 }
 
+
 const updateFilteredList = debounce(() => {
-	filteredList.value = people.filter((item) =>
+	filteredList.value = people.filter((item: Person) =>
 		item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
 	);
 	showDropdown.value = !!filteredList.value.length;
 }, 300);
 
+
 watch(searchQuery, () => {
 	updateFilteredList();
 });
 
-const handleBlur = () => {
+
+const handleBlur = (): void => {
 	showDropdown.value = false; 
 };
 
@@ -62,18 +72,19 @@ const highlightMatch = (item: string): { text: string; highlighted: boolean }[] 
 
 	return parts.map((part, index) => ({
 		text: part,
-		highlighted: index % 2 === 1
+		highlighted: index % 2 === 1, 
 	}));
 };
 
 
-const selectItem = (item: { id: string; name: string }) => {
+const selectItem = (item: Person): void => {
 	searchQuery.value = item.name; 
 	showDropdown.value = false; 
 
 	console.log('Selected ID:', item.id);
 };
 </script>
+
 
 <style lang="scss" scoped>
 
