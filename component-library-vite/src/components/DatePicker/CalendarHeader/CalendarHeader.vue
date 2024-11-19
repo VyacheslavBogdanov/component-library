@@ -3,10 +3,10 @@
 		<div class="header-item">
 			<button class="nav-button" @click="emit('ToggleHeaderDate', 'month', 'prev')">ᐸ</button>
 			<span class="month" @click="isMonthDropdownVisible = !isMonthDropdownVisible">
-				{{ months[selectedMonth] }}
+				{{ props.months[props.selectedMonth] }}
 				<div v-if="isMonthDropdownVisible" class="month-dropdown">
 					<span
-						v-for="(month, index) in months"
+						v-for="(month, index) in props.months"
 						:key="index"
 						@click="SelectHeaderDate(index, 'month')"
 					>
@@ -19,10 +19,13 @@
 		<div class="header-item">
 			<button class="nav-button" @click="emit('ToggleHeaderDate', 'year', 'prev')">ᐸ</button>
 			<span class="year" @click="isYearDropdownVisible = !isYearDropdownVisible">
-				{{ selectedYear }}
+				{{ props.selectedYear }}
 				<div v-if="isYearDropdownVisible" class="year-dropdown">
 					<span
-						v-for="year in Array.from({ length: 21 }, (_, i) => selectedYear - 10 + i)"
+						v-for="year in Array.from(
+							{ length: 21 },
+							(_, i) => props.selectedYear - 10 + i,
+						)"
 						:key="year"
 						@click="SelectHeaderDate(year, 'year')"
 					>
@@ -60,12 +63,14 @@ const SelectHeaderDate = (value: number, type: 'month' | 'year') => {
 </script>
 
 <style lang="scss" scoped>
-$border-color: #dcdcdcd2;
-$weekend-color: #e60000;
-$date-picker-margin: 17px;
-$font-family: sans-serif;
-$border-radius: 7px;
-$cursor: pointer;
+// $border-color: #dcdcdcd2;
+// $weekend-color: #e60000;
+// $date-picker-margin: 17px;
+// $font-family: sans-serif;
+// $border-radius: 7px;
+// $cursor: pointer;
+
+@import '../variables.scss';
 .calendar-header {
 	display: flex;
 	justify-content: space-between;

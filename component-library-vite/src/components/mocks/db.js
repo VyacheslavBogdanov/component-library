@@ -80,7 +80,7 @@ const mockAPI = (endpoint) => {
 			} else {
 				reject({ error: 'Not Found', status: 404 });
 			}
-		}, 500);
+		}, 300);
 	});
 };
 

@@ -2,8 +2,11 @@
 	<h1>Date Picker</h1>
 	<div class="date-form">
 		<DateForm
-			:formattedDate="formattedDate"
 			@toggleVisible="isCalendarVisible = !isCalendarVisible"
+			@changeDate="handleChangeDate"
+			:selectedYear="selectedYear"
+			:selectedMonth="selectedMonth"
+			:selectedDay="selectedDay"
 		/>
 	</div>
 	<div v-if="isCalendarVisible" class="calendar">
@@ -17,7 +20,9 @@
 		/>
 		<Days
 			@ToggleHeaderDate="ToggleHeaderDate"
+			@prevMonth="ToggleHeaderDate"
 			@selectDay="(day) => (selectedDay = day)"
+			@nextMonth="ToggleHeaderDate"
 			:daysNames="daysNames"
 			:selectedDay="selectedDay"
 			:selectedYear="selectedYear"
@@ -27,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { fetchData } from '../mocks/db.js';
 import DateForm from './DateForm/DateForm.vue';
 import CalendarHeader from './CalendarHeader/CalendarHeader.vue';
@@ -35,7 +40,7 @@ import Days from './Days/Days.vue';
 
 const selectedYear = ref<number>(new Date().getFullYear());
 const selectedMonth = ref<number>(new Date().getMonth());
-const selectedDay = ref<number>(0);
+const selectedDay = ref<number | null>(null);
 const isCalendarVisible = ref<boolean>(false);
 const months = ref<string[]>([]);
 const daysNames = ref<string[]>([]);
@@ -53,27 +58,17 @@ onMounted(() => {
 	loadData();
 });
 
-const formattedDate = computed({
-	get: () => {
-		if (selectedDay.value === 0) return '';
-		const dateFormat = `${String(selectedDay.value).padStart(2, '0')}
-		.${String(selectedMonth.value + 1).padStart(2, '0')}.${selectedYear.value}`;
-		return dateFormat;
-	},
-	set: (value: string) => {
-		console.log('SET');
+interface DateType {
+	day: number;
+	month: number;
+	year: number;
+}
 
-		const datePattern = /^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])\.(\d{4})$/;
-		if (datePattern.test(value)) {
-			const [day, month, year] = value.split('.').map(Number);
-			if (day && month && year) {
-				selectedDay.value = day;
-				selectedMonth.value = month - 1;
-				selectedYear.value = year;
-			}
-		}
-	},
-});
+const handleChangeDate = ({ day, month, year }: DateType): void => {
+	selectedDay.value = day;
+	selectedMonth.value = month;
+	selectedYear.value = year;
+};
 
 const ToggleHeaderDate = (type: string, route: string) => {
 	if (type === 'month') {
@@ -105,12 +100,13 @@ const ToggleHeaderDate = (type: string, route: string) => {
 // Как передать переменные во все дочерние компоненты? Миксины?
 
 <style lang="scss">
-$border-color: #dcdcdcd2;
-$weekend-color: #e60000;
-$date-picker-margin: 17px;
-$font-family: sans-serif;
-$border-radius: 7px;
-$cursor: pointer;
+// $border-color: #dcdcdcd2;
+// $weekend-color: #e60000;
+// $date-picker-margin: 17px;
+// $font-family: sans-serif;
+// $border-radius: 7px;
+// $cursor: pointer;
+@import './variables.scss';
 
 .date-form {
 	position: relative;

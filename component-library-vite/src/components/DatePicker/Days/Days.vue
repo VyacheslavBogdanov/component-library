@@ -7,7 +7,7 @@
 			v-for="(day, index) in prevMonthDays"
 			:key="index"
 			:class="['day', { weekend: isWeekendPrevMonth(day) }]"
-			@click="emit('prevMonth')"
+			@click="emit('prevMonth', 'month', 'prev')"
 		>
 			<span class="other-month">{{ day }}</span>
 		</span>
@@ -30,7 +30,7 @@
 			v-for="(day, index) in nextMonthDays"
 			:key="index"
 			:class="['day', { weekend: isWeekendNextMonth(day) }]"
-			@click="emit('nextMonth')"
+			@click="emit('nextMonth', 'month', 'next')"
 		>
 			<span class="other-month">{{ day }}</span>
 		</span>
@@ -43,7 +43,7 @@ const emit = defineEmits(['prevMonth', 'selectDay', 'nextMonth']);
 
 const props = defineProps({
 	daysNames: { type: Array, default: [] },
-	selectedDay: { type: Number, required: true },
+	selectedDay: { type: [Number, null], required: true },
 	selectedYear: { type: Number, required: true },
 	selectedMonth: { type: Number, required: true },
 });
@@ -91,13 +91,14 @@ const nextMonthDays = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-$border-color: #dcdcdcd2;
-$weekend-color: #e60000;
-$date-picker-margin: 17px;
-$font-family: sans-serif;
-$border-radius: 7px;
-$cursor: pointer;
+// $border-color: #dcdcdcd2;
+// $weekend-color: #e60000;
+// $date-picker-margin: 17px;
+// $font-family: sans-serif;
+// $border-radius: 7px;
+// $cursor: pointer;
 
+@import '../variables.scss';
 .day-names {
 	width: 90%;
 	font-size: 20px;
