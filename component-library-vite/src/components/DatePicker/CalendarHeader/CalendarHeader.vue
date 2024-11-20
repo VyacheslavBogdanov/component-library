@@ -35,8 +35,23 @@
 			</span>
 			<button class="nav-button" @click="emit('ToggleHeaderDate', 'year', 'next')">ᐳ</button>
 		</div>
+		<!-- <div class="header-item">
+			<button class="nav-button" @click="emit('ToggleHeaderDate', 'month', 'prev')">ᐸ</button>
+			<span class="month" @click="isMonthDropdownVisible = !isMonthDropdownVisible">
+				{{ props.months[props.selectedMonth] }}
+				<div v-if="isMonthDropdownVisible" class="month-dropdown">
+					<span
+						v-for="(month, index) in props.months"
+						:key="index"
+						@click="SelectHeaderDate(index, 'month')"
+					>
+						{{ month }}
+					</span>
+				</div>
+			</span>
+			<button class="nav-button" @click="emit('ToggleHeaderDate', 'month', 'next')">ᐳ</button>
+		</div> -->
 	</div>
-	<Days />
 </template>
 
 <script setup lang="ts">
@@ -63,14 +78,7 @@ const SelectHeaderDate = (value: number, type: 'month' | 'year') => {
 </script>
 
 <style lang="scss" scoped>
-// $border-color: #dcdcdcd2;
-// $weekend-color: #e60000;
-// $date-picker-margin: 17px;
-// $font-family: sans-serif;
-// $border-radius: 7px;
-// $cursor: pointer;
-
-@import '../variables.scss';
+@import '../utils/variables.scss';
 .calendar-header {
 	display: flex;
 	justify-content: space-between;

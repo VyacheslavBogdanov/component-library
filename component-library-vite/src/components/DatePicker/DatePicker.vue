@@ -46,6 +46,7 @@ const months = ref<string[]>([]);
 const daysNames = ref<string[]>([]);
 
 const loadData = async () => {
+	// Добавить анимацию загрузки данных?
 	try {
 		months.value = await fetchData('/months');
 		daysNames.value = await fetchData('/days-names');
@@ -97,16 +98,8 @@ const ToggleHeaderDate = (type: string, route: string) => {
 };
 </script>
 
-// Как передать переменные во все дочерние компоненты? Миксины?
-
 <style lang="scss">
-// $border-color: #dcdcdcd2;
-// $weekend-color: #e60000;
-// $date-picker-margin: 17px;
-// $font-family: sans-serif;
-// $border-radius: 7px;
-// $cursor: pointer;
-@import './variables.scss';
+@import './utils/variables.scss';
 
 .date-form {
 	position: relative;

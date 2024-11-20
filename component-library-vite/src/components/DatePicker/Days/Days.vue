@@ -91,14 +91,7 @@ const nextMonthDays = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-// $border-color: #dcdcdcd2;
-// $weekend-color: #e60000;
-// $date-picker-margin: 17px;
-// $font-family: sans-serif;
-// $border-radius: 7px;
-// $cursor: pointer;
-
-@import '../variables.scss';
+@import '../utils/variables.scss';
 .day-names {
 	width: 90%;
 	font-size: 20px;

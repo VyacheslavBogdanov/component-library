@@ -69,7 +69,7 @@ const props = defineProps({
 	selectedMonth: { type: Number, required: true },
 	selectedDay: { type: [Number, null], required: true },
 });
-
+// типизация defineEmits?
 const emit = defineEmits(['toggleVisible', 'changeDate']);
 
 const inputValue = ref<string>('');
@@ -101,14 +101,7 @@ watch(inputValue, (value) => {
 </script>
 
 <style lang="scss" scoped>
-// $border-color: #dcdcdcd2;
-// $weekend-color: #e60000;
-// $date-picker-margin: 17px;
-// $font-family: sans-serif;
-// $border-radius: 7px;
-// $cursor: pointer;
-
-@import '../variables.scss';
+@import '../utils/variables.scss';
 
 .date-form__input {
 	width: 100%;

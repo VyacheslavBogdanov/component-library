@@ -66,7 +66,24 @@ const months = [
 	'Декабрь',
 ];
 
+// const years = Array.from({ length: 21 }, (_, i) => props.selectedYear - 10 + i);
+
 const daysNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
+// const selectedYear = new Date().getFullYear();
+
+// const selectedMonth = new Date().getMonth();
+
+// const calendarHeaderItem = [
+// 	{
+// 		type: 'month',
+// 		typesArr: months,
+// 	},
+// 	{
+// 		type: 'year',
+// 		typesArr: years,
+// 	},
+// ];
 
 const mockAPI = (endpoint) => {
 	return new Promise((resolve, reject) => {
@@ -80,7 +97,7 @@ const mockAPI = (endpoint) => {
 			} else {
 				reject({ error: 'Not Found', status: 404 });
 			}
-		}, 300);
+		}, 500);
 	});
 };
 
