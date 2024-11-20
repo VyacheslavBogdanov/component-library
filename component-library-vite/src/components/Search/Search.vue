@@ -4,11 +4,16 @@
 			required
 			type="text"
 			v-model="searchQuery"
+			@focus="handleFocus"
 			@blur="handleBlur"
-			:class="{ 'has-dropdown': searchQuery && filteredList.length }"
+			:class="{
+				'search__input--has-dropdown': showDropdown,
+				'search__input--focused': isFocused
+			}"
+			class="search__input"
 		/>
-		<label class="placeholder">Поиск</label>
-		<div class="iconsearch"></div>
+		<label class="search__placeholder">Поиск</label>
+		<div class="search__icon"></div>
 		<Dropdown
 			v-if="showDropdown"
 			:items="filteredList"
@@ -19,50 +24,38 @@
 </template>
 
 <script setup lang="ts">
-
 import { ref, watch } from 'vue';
 import { people } from '../mocks/db.d';
 import Dropdown from './Dropdown.vue';
+import { debounce } from './utils';
 
 interface Person {
 	id: string;
 	name: string;
 }
 
+const searchQuery = ref<string>('');
+const filteredList = ref<Person[]>([]);
+const showDropdown = ref<boolean>(false);
 
-const searchQuery = ref<string>(''); 
-const filteredList = ref<Person[]>([]); 
-const showDropdown = ref<boolean>(false); 
+const isFocused = ref<boolean>(false);
 
-function debounce<T extends (...args: any[]) => void>(
-	func: T,
-	wait: number,
-): (...args: Parameters<T>) => void {
-	let timeout: ReturnType<typeof setTimeout> | undefined;
-	return function (...args: Parameters<T>) {
-		clearTimeout(timeout);
-		timeout = setTimeout(() => func(...args), wait);
-	};
-}
-
+const handleFocus = () => (isFocused.value = true);
+const handleBlur = () => {
+	isFocused.value = false;
+	showDropdown.value = false;
+};
 
 const updateFilteredList = debounce(() => {
 	filteredList.value = people.filter((item: Person) =>
-		item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
+		item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase())
 	);
 	showDropdown.value = !!filteredList.value.length;
 }, 300);
 
-
 watch(searchQuery, () => {
 	updateFilteredList();
 });
-
-
-const handleBlur = (): void => {
-	showDropdown.value = false; 
-};
-
 
 const highlightMatch = (item: string): { text: string; highlighted: boolean }[] => {
 	if (!searchQuery.value) return [{ text: item, highlighted: false }];
@@ -72,129 +65,89 @@ const highlightMatch = (item: string): { text: string; highlighted: boolean }[] 
 
 	return parts.map((part, index) => ({
 		text: part,
-		highlighted: index % 2 === 1, 
+		highlighted: index % 2 === 1
 	}));
 };
 
-
 const selectItem = (item: Person): void => {
-	searchQuery.value = item.name; 
-	showDropdown.value = false; 
-
+	searchQuery.value = item.name;
+	showDropdown.value = false;
 	console.log('Selected ID:', item.id);
 };
 </script>
 
-
 <style lang="scss" scoped>
 
+@import './variables';
 
-$border-color-focus: #007bff;
-$width-container: 450px;
-$font-size-container: 22px;
-$min-height-dropdown: 180px;
-$max-height-dropdown: 400px;
-$height-input: 45px;
-$height-input-icon: $height-input * 0.5;
-$margin-li: 13px;
-$font-allelement: sans-serif;
-
-.search{
-	max-width: $width-container;
+.search {
 	display: flex;
-	
+	flex-direction: column;
+	position: relative;
+	max-width: $width-container;
 
-	input[type='text'] {
-		position: relative;
-		font-family: $font-allelement;
-		width: 80%;
+	&__input {
+		width: 100%;
 		height: $height-input;
-		font-size: $font-size-container;
-		border: 1.5px solid #9f979773;
-		border-radius: 8px;
+		font-size: $font-size-input;
+		border: 1.5px solid $color-border;
+		border-radius: $border-radius;
+		padding: 0 40px 0 10px;
+		font-family: $font-family;
+		transition: border-color 0.2s, border-radius 0.2s;
 		outline: none;
-		transition: border-color 0.2s;
-		padding-left: 10px;
-		padding-right: 40px;
-		box-sizing: border-box;
 
-		&:focus,
-		&:valid {
-			border-color: $border-color-focus;
-
-			& + .placeholder {
-				top: -1px;
-				color: $border-color-focus;
-				background-color: white;
-				font-size: 17px;
-			}
-
-			~ .iconsearch::before {
-				border-color: $border-color-focus;
-			}
-
-			~ .iconsearch::after {
-				background: $border-color-focus;
-			}
+		&--focused {
+			border-color: $color-border-focus;
 		}
 
-		&.has-dropdown {
-			border-bottom: none;
-			border-radius: 8px 8px 0 0;
-			border-color: $border-color-focus;
+		&--has-dropdown {
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+			border-color: $color-border-focus;
 		}
 	}
 
-	.placeholder {
+	&__placeholder {
 		position: absolute;
 		left: 10px;
 		top: 50%;
-		font-size: $font-size-container;
-		padding: 3px;
 		transform: translateY(-50%);
-		transition: 0.8ms ease;
-		transform-origin: left top;
-		pointer-events: none;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		width: min-content;
-		color: #9f979773;
-		font-family: $font-allelement;
-		white-space: nowrap;
+		color: $color-border;
+		transition: all 0.2s ease;
+		font-family: $font-family;
 	}
 
-	.iconsearch {
+	&__icon {
 		position: absolute;
-		right: 7px;
-		top: $height-input-icon;
-		width: 30px;
-		height: 30px;
+		right: 10px;
+		top: 50%;
 		transform: translateY(-50%);
-		display: grid;
-		place-items: center;
+		width: 20px;
+		height: 20px;
 
-		&::before {
-			content: '';
-			width: 9.5px;
-			height: 9.5px;
-			border: 1.5px solid #9f979773;
-			border-radius: 50%;
-			transition: border-color 0.2s;
-			position: absolute;
-			transform: translate(-2px, -2px);
-		}
-
+		&::before,
 		&::after {
 			content: '';
 			position: absolute;
-			width: 1.5px;
-			height: 9.5px;
-			background: #9f979773;
-			transform: rotate(-45deg) translate(-0px, +7px);
-			transition: background-color 0.2s;
+			transition: all 0.2s;
 		}
-	
-			}
+
+		&::before {
+			width: 10px;
+			height: 10px;
+			border: 2px solid $color-border;
+			border-radius: 50%;
 		}
-	
+
+		&::after {
+			width: 2px;
+			height: 10px;
+			background: $color-border;
+			transform: rotate(-45deg) translate(-2px, 4px);
+		}
+	}
+}
+
+
 </style>
