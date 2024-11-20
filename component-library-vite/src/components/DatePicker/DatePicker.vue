@@ -58,8 +58,10 @@ const daysNames = ref<string[]>([]);
 
 const loadData = async () => {
 	try {
-		calendarHeaderItem.value = await fetchData('/calendar-header-item');
-		daysNames.value = await fetchData('/days-names');
+		const headerItems = await fetchData('/calendar-header-item');
+		const days = await fetchData('/days-names');
+		calendarHeaderItem.value = headerItems as CalendarHeaderItem[];
+		daysNames.value = days as string[];
 	} catch (error) {
 		console.error(error);
 	}
@@ -75,7 +77,7 @@ const handleChangeDate = ({ day, month, year }: DateType): void => {
 	selectedYear.value = year;
 };
 
-const ToggleHeaderDate = (type: string, route: string) => {
+const ToggleHeaderDate = (type: 'month' | 'year', route: 'prev' | 'next') => {
 	if (type === 'month') {
 		if (route === 'prev') {
 			if (selectedMonth.value === 0) {
@@ -93,11 +95,7 @@ const ToggleHeaderDate = (type: string, route: string) => {
 			}
 		}
 	} else if (type === 'year') {
-		if (route === 'prev') {
-			selectedYear.value -= 1;
-		} else if (route === 'next') {
-			selectedYear.value += 1;
-		}
+		selectedYear.value += route === 'prev' ? -1 : 1;
 	}
 };
 </script>

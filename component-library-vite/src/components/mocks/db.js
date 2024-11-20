@@ -68,7 +68,7 @@ const months = [
 
 const daysNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
-const years = Array.from({ length: 21 }, (_, i) => 2024 - 10 + i);
+const years = Array.from({ length: 21 }, (_, i) => new Date().getFullYear() - 10 + i);
 
 const calendarHeaderItem = [
 	{
