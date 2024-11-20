@@ -1,6 +1,5 @@
 
-  
-  export const people: Person[] = [
+export const people: Person[] = [
     { id: '1', name: 'Иванов Иван' },
     { id: '2', name: 'Петров Петр' },
     { id: '3', name: 'Сидоров Александр' },

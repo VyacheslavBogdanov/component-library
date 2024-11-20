@@ -48,13 +48,13 @@
   
   <style lang="scss" scoped>
 
-  @import './variables.scss';
+   @import './style-variables.scss';   
   
   .dropdown {
 	position: absolute;
 	top: 100%;
 	left: 0;
-	width: 700px; 
+	width: $width-container; 
 	background: $color-background-dropdown;
 	border: 1.5px solid $color-border-focus;
 	border-top: none;
@@ -63,6 +63,7 @@
 	max-height: $dropdown-max-height;
 	overflow-y: auto;
 	z-index: 10;
+	box-sizing: border-box;
   
 	&__list {
 	  list-style: none;
@@ -75,14 +76,11 @@
 	  padding: 5px 10px;
 	  cursor: pointer;
 	  text-align: start;
-	  background-color: $color-background-dropdown;
+	  background-color: $color-background-li;
 	  font-family: $font-family;
-	  font-size: $font-size-input;
+	  font-size: $font-size-item;
 	  transition: background-color 0.2s;
   
-	  &:hover {
-		background-color: $color-background-hover;
-	  }
   
 	  &--highlighted {
 		font-weight: bold;
