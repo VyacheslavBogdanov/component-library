@@ -66,32 +66,28 @@ const months = [
 	'Декабрь',
 ];
 
-// const years = Array.from({ length: 21 }, (_, i) => props.selectedYear - 10 + i);
-
 const daysNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
-// const selectedYear = new Date().getFullYear();
+const years = Array.from({ length: 21 }, (_, i) => 2024 - 10 + i);
 
-// const selectedMonth = new Date().getMonth();
-
-// const calendarHeaderItem = [
-// 	{
-// 		type: 'month',
-// 		typesArr: months,
-// 	},
-// 	{
-// 		type: 'year',
-// 		typesArr: years,
-// 	},
-// ];
+const calendarHeaderItem = [
+	{
+		type: 'month',
+		typesArr: months,
+	},
+	{
+		type: 'year',
+		typesArr: years,
+	},
+];
 
 const mockAPI = (endpoint) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (endpoint === '/people') {
 				resolve(people);
-			} else if (endpoint === '/months') {
-				resolve(months);
+			} else if (endpoint === '/calendar-header-item') {
+				resolve(calendarHeaderItem);
 			} else if (endpoint === '/days-names') {
 				resolve(daysNames);
 			} else {

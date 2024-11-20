@@ -14,7 +14,7 @@
 			@ToggleHeaderDate="ToggleHeaderDate"
 			@changeSelectedMonth="(value) => (selectedMonth = value)"
 			@changeSelectedYear="(value) => (selectedYear = value)"
-			:months="months"
+			:calendarHeaderItem="calendarHeaderItem"
 			:selectedYear="selectedYear"
 			:selectedMonth="selectedMonth"
 		/>
@@ -38,17 +38,27 @@ import DateForm from './DateForm/DateForm.vue';
 import CalendarHeader from './CalendarHeader/CalendarHeader.vue';
 import Days from './Days/Days.vue';
 
+interface CalendarHeaderItem {
+	type: 'month' | 'year';
+	typesArr: string[] | number[];
+}
+
+interface DateType {
+	day: number;
+	month: number;
+	year: number;
+}
+
 const selectedYear = ref<number>(new Date().getFullYear());
 const selectedMonth = ref<number>(new Date().getMonth());
 const selectedDay = ref<number | null>(null);
 const isCalendarVisible = ref<boolean>(false);
-const months = ref<string[]>([]);
+const calendarHeaderItem = ref<CalendarHeaderItem[]>([]);
 const daysNames = ref<string[]>([]);
 
 const loadData = async () => {
-	// Добавить анимацию загрузки данных?
 	try {
-		months.value = await fetchData('/months');
+		calendarHeaderItem.value = await fetchData('/calendar-header-item');
 		daysNames.value = await fetchData('/days-names');
 	} catch (error) {
 		console.error(error);
@@ -58,12 +68,6 @@ const loadData = async () => {
 onMounted(() => {
 	loadData();
 });
-
-interface DateType {
-	day: number;
-	month: number;
-	year: number;
-}
 
 const handleChangeDate = ({ day, month, year }: DateType): void => {
 	selectedDay.value = day;
