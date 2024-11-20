@@ -33,7 +33,7 @@
   
   const props = defineProps<{
 	items: Item[];
-	searchQuery: string; // Передаем строку для подсветки
+	searchQuery: string;
 	highlightMatch: (text: string, query: string) => { text: string; highlighted: boolean }[];
   }>();
   
@@ -42,23 +42,23 @@
   }>();
   
   const handleSelect = (item: Item) => {
-	emit('select', item); // Возвращаем выбранный элемент родительскому компоненту
+	emit('select', item); 
   };
   </script>
-  
   <style lang="scss" scoped>
+
   @import './variables.scss';
   
   .dropdown {
 	position: absolute;
 	top: 100%;
 	left: 0;
-	width: 100%; /* Совпадает с шириной input */
+	width: 700px; 
 	background: $color-background-dropdown;
 	border: 1.5px solid $color-border-focus;
 	border-top: none;
 	border-radius: 0 0 $border-radius $border-radius;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	min-height: $dropdown-min-height;
 	max-height: $dropdown-max-height;
 	overflow-y: auto;
 	z-index: 10;
@@ -85,7 +85,7 @@
   
 	  &--highlighted {
 		font-weight: bold;
-		color: $color-text-highlight;
+		
 	  }
 	}
   }

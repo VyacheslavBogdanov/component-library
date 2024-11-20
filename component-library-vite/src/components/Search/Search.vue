@@ -15,7 +15,7 @@
 	  <label class="search__placeholder">Поиск</label>
 	  <div class="search__icon"></div>
 	  <Dropdown
-		v-if="showDropdown && filteredList.length > 0" 
+		v-if="showDropdown && filteredList.length > 0"
 		:items="filteredList"
 		:searchQuery="searchQuery"
 		:highlightMatch="highlightMatch"
@@ -26,61 +26,66 @@
   
   <script setup lang="ts">
   import { ref, watch, nextTick } from 'vue';
-  import { people } from '../mocks/db.d'; // Массив данных
+  import { people } from '../mocks/db.d'; 
   import Dropdown from './Dropdown.vue';
-  import { debounce ,highlightMatch} from './utils'; // Функция debounce
-  
+  import { debounce, highlightMatch } from './utils';
   
   interface Person {
 	id: string;
 	name: string;
   }
   
-  const searchQuery = ref<string>(''); // Введенный запрос
-  const filteredList = ref<Person[]>([]); // Отфильтрованный список
-  const showDropdown = ref<boolean>(false); // Состояние отображения дропдауна
-  const isFocused = ref<boolean>(false); // Состояние фокуса
+  const searchQuery = ref<string>(''); 
+  const filteredList = ref<Person[]>([]); 
+  const showDropdown = ref<boolean>(false); 
+  const isFocused = ref<boolean>(false); 
+  const userIsSelecting = ref<boolean>(false); 
   
-  // Обработчики фокуса
+ 
   const handleFocus = () => {
 	isFocused.value = true;
   };
   
-  // Обработчик потери фокуса
+ 
   const handleBlur = () => {
 	isFocused.value = false;
 	nextTick(() => {
-	  if (!isFocused.value) {
-		showDropdown.value = false; // Закрытие дропдауна после потери фокуса
+	  if (!isFocused.value && !userIsSelecting.value) {
+		showDropdown.value = false; 
 	  }
 	});
   };
   
-  // Дебаунс для фильтрации
+  
   const updateFilteredList = debounce(() => {
 	filteredList.value = people.filter((item: Person) =>
-	  item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase()) // Фильтрация с учетом первой буквы
+	  item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase()) 
 	);
-	showDropdown.value = filteredList.value.length > 0; // Показываем дропдаун только если есть совпадения
-  }, 300); // Ожидание 300 мс после ввода
+	showDropdown.value = filteredList.value.length > 0; 
+  }, 300);
   
-  // Слежение за запросом поиска
+
   watch(searchQuery, (newQuery) => {
-	if (newQuery) {
-	  updateFilteredList();  // Фильтруем по запросу
+	if (newQuery && !userIsSelecting.value) {
+	  updateFilteredList(); 
 	} else {
-	  filteredList.value = [];  // Очистка списка, если поле пустое
-	  showDropdown.value = false; // Скрываем дропдаун
+	  filteredList.value = []; 
+	  showDropdown.value = false; 
 	}
   });
   
-  // Выбор элемента из дропдауна
+  
   const selectItem = (item: Person): void => {
-	searchQuery.value = item.name; // Устанавливаем выбранный элемент в input
-	showDropdown.value = false; // Закрытие дропдауна
+	searchQuery.value = item.name; 
+	showDropdown.value = false; 
+	userIsSelecting.value = true; 
+	nextTick(() => {
+	  userIsSelecting.value = false; 
+	});
   };
   </script>
-  
+
+
   <style lang="scss" scoped>
   @import './variables';
   
@@ -88,7 +93,7 @@
 	display: flex;
 	flex-direction: column;
 	position: relative;
-	max-width: $width-container;
+	width: $width-container;
   
 	&__input {
 	  width: 100%;
@@ -108,6 +113,7 @@
 	  &--has-dropdown {
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
+		border-bottom: none;
 		border-color: $color-border-focus;
 	  }
 	}

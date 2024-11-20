@@ -16,16 +16,12 @@ export const highlightMatch = (text: string, query: string) => {
 	const lowerText = text.toLowerCase();
 	const lowerQuery = query.toLowerCase();
   
-	// Проверяем, начинается ли текст с введенной строки
+	
 	if (lowerText.startsWith(lowerQuery)) {
-	  // Подсвечиваем первую часть
-	  parts.push({ text: text.slice(0, query.length), highlighted: true });
-	  // Остальную часть оставляем без подсветки
+	  parts.push({ text: text.slice(0, query.length), highlighted: true }); 
 	  parts.push({ text: text.slice(query.length), highlighted: false });
 	} else {
-	  // Если нет совпадений, возвращаем обычный текст
 	  parts.push({ text: text, highlighted: false });
 	}
-  
 	return parts;
   };
