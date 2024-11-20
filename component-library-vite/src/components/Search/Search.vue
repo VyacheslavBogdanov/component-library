@@ -4,8 +4,8 @@
 		required
 		type="text"
 		v-model="searchQuery"
-		@focus="handleFocus"
-		@blur="handleBlur"
+		@focus="handleFocus(true)"
+		@blur="handleFocus(false)"
 		:class="{
 		  'search__input--has-dropdown': showDropdown,
 		  'search__input--focused': isFocused
@@ -15,7 +15,7 @@
 	  <label class="search__placeholder">Поиск</label>
 	  <div class="search__icon"></div>
 	  <Dropdown
-		v-if="showDropdown && filteredList.length > 0"
+		v-if="showDropdown"
 		:items="filteredList"
 		:searchQuery="searchQuery"
 		:highlightMatch="highlightMatch"
@@ -25,10 +25,10 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, watch, nextTick } from 'vue';
+  import { ref, computed, watch, nextTick } from 'vue';
   import { people } from '../mocks/db.d'; 
   import Dropdown from './Dropdown.vue';
-  import { debounce, highlightMatch } from './utils';
+  import { debounce, highlightMatch } from './utils.d';
   
   interface Person {
 	id: string;
@@ -37,55 +37,44 @@
   
   const searchQuery = ref<string>(''); 
   const filteredList = ref<Person[]>([]); 
-  const showDropdown = ref<boolean>(false); 
-  const isFocused = ref<boolean>(false); 
-  const userIsSelecting = ref<boolean>(false); 
+  const isFocused = ref<boolean>(false);
+  const userIsSelecting = ref<boolean>(false);
   
- 
-  const handleFocus = () => {
-	isFocused.value = true;
-  };
-  
- 
-  const handleBlur = () => {
-	isFocused.value = false;
-	nextTick(() => {
-	  if (!isFocused.value && !userIsSelecting.value) {
-		showDropdown.value = false; 
-	  }
-	});
-  };
-  
-  
-  const updateFilteredList = debounce(() => {
+  const updateFilteredList = debounce(async () => {
 	filteredList.value = people.filter((item: Person) =>
-	  item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase()) 
+	  item.name.toLowerCase().startsWith(searchQuery.value.toLowerCase())
 	);
-	showDropdown.value = filteredList.value.length > 0; 
   }, 300);
   
-
+  const showDropdown = computed(() => {
+	return filteredList.value.length > 0 && searchQuery.value.trim().length > 0 && isFocused.value;
+  });
+  
+  const handleFocus = (focus: boolean) => {
+	isFocused.value = focus;
+	if (!focus) {
+	  filteredList.value = []; 
+	}
+  };
+  
   watch(searchQuery, (newQuery) => {
 	if (newQuery && !userIsSelecting.value) {
 	  updateFilteredList(); 
 	} else {
-	  filteredList.value = []; 
-	  showDropdown.value = false; 
+	  filteredList.value = [];
 	}
   });
   
-  
   const selectItem = (item: Person): void => {
-	searchQuery.value = item.name; 
-	showDropdown.value = false; 
-	userIsSelecting.value = true; 
-	nextTick(() => {
-	  userIsSelecting.value = false; 
-	});
-  };
+  searchQuery.value = item.name;
+  userIsSelecting.value = true;
+  nextTick(() => {
+    userIsSelecting.value = false;
+  });
+};
   </script>
-
-
+  
+  
   <style lang="scss" scoped>
   @import './variables';
   

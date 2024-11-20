@@ -42,9 +42,10 @@
   }>();
   
   const handleSelect = (item: Item) => {
-	emit('select', item); 
+	emit('select', item);
   };
   </script>
+  
   <style lang="scss" scoped>
 
   @import './variables.scss';
