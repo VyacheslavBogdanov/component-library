@@ -26,7 +26,7 @@
 			Поиск
 		</label>
 		<div class="searchbox__icon"></div>
-		<Dropdown
+		<DropdownList
 			v-if="showDropdown"
 			:items="filteredList"
 			:searchQuery="searchQuery"
@@ -39,8 +39,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { fetchData } from '../../mocks/db.js';
-import Dropdown from '../Dropdown/Dropdown.vue';
-import { debounce, highlightMatch } from '../utils/utils';
+import { debounce, highlightMatch } from '../utils/utils.js';
+import DropdownList from '../Dropdown.vue/DropdownList.vue';
 
 const searchQuery = ref<string>('');
 const filteredList = ref<string[]>([]);
