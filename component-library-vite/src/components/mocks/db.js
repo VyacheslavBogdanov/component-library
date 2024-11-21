@@ -81,6 +81,12 @@ const calendarHeaderItem = [
 	},
 ];
 
+// export const daysConfig = [
+// 	{ key: 'prevMonthDays', class: 'other-month', emitEvent: 'prevMonth' },
+// 	{ key: 'daysInMonth', class: '', emitEvent: 'selectDay' },
+// 	{ key: 'nextMonthDays', class: 'other-month', emitEvent: 'nextMonth' },
+// ];
+
 const mockAPI = (endpoint) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {

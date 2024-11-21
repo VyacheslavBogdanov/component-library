@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
+import { ref } from 'vue';
 
 interface CalendarHeaderItem {
 	type: 'month' | 'year';
