@@ -51,6 +51,8 @@ const people = [
 	'Афанасьев Н.А.',
 ];
 
+  
+
 const months = [
 	'Январь',
 	'Февраль',
@@ -80,6 +82,7 @@ const calendarHeaderItem = [
 		typesArr: years,
 	},
 ];
+
 
 const mockAPI = (endpoint) => {
 	return new Promise((resolve, reject) => {
