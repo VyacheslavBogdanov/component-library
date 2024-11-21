@@ -13,12 +13,12 @@
     "format": "prettier --write src/"
   },
   "eslintConfig": {
-	"extends": [
-		"prettier"
-	],
-	"plugins": [
-		"prettier"
-	]
+    "extends": [
+      "prettier"
+    ],
+    "plugins": [
+      "prettier"
+    ]
   },
   "dependencies": {
     "eslint-config-prettier": "^9.1.0",
