@@ -1,5 +1,3 @@
-const PORT = 3003;
-
 const people = [
 	'Смирнов А.В.',
 	'Иванов Д.С.',
@@ -70,13 +68,26 @@ const months = [
 
 const daysNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
+const years = Array.from({ length: 21 }, (_, i) => new Date().getFullYear() - 10 + i);
+
+const calendarHeaderItem = [
+	{
+		type: 'month',
+		typesArr: months,
+	},
+	{
+		type: 'year',
+		typesArr: years,
+	},
+];
+
 const mockAPI = (endpoint) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (endpoint === '/people') {
 				resolve(people);
-			} else if (endpoint === '/months') {
-				resolve(months);
+			} else if (endpoint === '/calendar-header-item') {
+				resolve(calendarHeaderItem);
 			} else if (endpoint === '/days-names') {
 				resolve(daysNames);
 			} else {
@@ -88,8 +99,7 @@ const mockAPI = (endpoint) => {
 
 export const fetchData = async (endpoint) => {
 	try {
-		const data = await mockAPI(endpoint);
-		return data;
+		return await mockAPI(endpoint);
 	} catch (error) {
 		console.error(`Error fetching data from ${endpoint}:`, error);
 		throw error;
