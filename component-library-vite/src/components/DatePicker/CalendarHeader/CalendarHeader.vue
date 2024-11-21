@@ -1,19 +1,23 @@
 <template>
 	<div class="calendar-header">
-		<div class="header-item" v-for="(item, index) in props.calendarHeaderItem" :key="index">
-			<button class="nav-button" @click="emit('ToggleHeaderDate', item.type, 'prev')">
+		<div class="header-items" v-for="(item, index) in props.calendarHeaderItem" :key="index">
+			<button
+				class="header-items__nav-buttons"
+				@click="emit('ToggleHeaderDate', item.type, 'prev')"
+			>
 				ᐸ
 			</button>
 			<span
-				class="month"
+				class="item"
 				@click="dropdownVisibility[item.type] = !dropdownVisibility[item.type]"
 			>
 				{{
 					item.type === 'month' ? item.typesArr[props.selectedMonth] : props.selectedYear
 				}}
-				<div v-if="dropdownVisibility[item.type]" class="dropdown">
+				<div v-if="dropdownVisibility[item.type]" class="item-dropdown">
 					<span
 						v-for="(el, elIndex) in item.typesArr"
+						class="item-dropdown__dropdown-element"
 						:key="elIndex"
 						@click="SelectHeaderDate(el, item.type, elIndex)"
 					>
@@ -21,7 +25,10 @@
 					</span>
 				</div>
 			</span>
-			<button class="nav-button" @click="emit('ToggleHeaderDate', item.type, 'next')">
+			<button
+				class="header-items__nav-buttons"
+				@click="emit('ToggleHeaderDate', item.type, 'next')"
+			>
 				ᐳ
 			</button>
 		</div>
@@ -53,11 +60,7 @@ const dropdownVisibility = ref<Record<string, boolean>>({
 	year: false,
 });
 
-const SelectHeaderDate = async (
-	value: string | number,
-	type: 'month' | 'year',
-	elIndex: number,
-) => {
+const SelectHeaderDate = (value: string | number, type: 'month' | 'year', elIndex: number) => {
 	if (type === 'month') {
 		emit('changeSelectedMonth', elIndex);
 	} else {
@@ -82,43 +85,43 @@ const SelectHeaderDate = async (
 	width: 445px;
 	height: 70px;
 
-	.header-item {
+	.header-items {
 		display: flex;
 		align-items: center;
-	}
 
-	.month,
-	.year {
-		font-size: 27px;
-		font-weight: bold;
-		cursor: $cursor;
-		position: relative;
-		padding: 0 12px;
-	}
-
-	.nav-button {
-		background: none;
-		border: none;
-		font-size: 23px;
-		cursor: $cursor;
-	}
-
-	.dropdown {
-		position: absolute;
-		background: white;
-		border: 1px solid $border-color;
-		padding: 5px;
-		z-index: 2;
-		max-height: 240px;
-		overflow-y: auto;
-		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-
-		span {
-			display: block;
-			padding: 5px;
+		&__nav-buttons {
+			background: none;
+			border: none;
+			font-size: 23px;
 			cursor: $cursor;
-			&:hover {
-				background: #e6e6e6;
+		}
+
+		.item {
+			font-size: 27px;
+			font-weight: bold;
+			cursor: $cursor;
+			position: relative;
+			padding: 0 12px;
+
+			.item-dropdown {
+				position: absolute;
+				background: white;
+				border: 1px solid $border-color;
+				padding: 5px;
+				z-index: 2;
+				max-height: 240px;
+				overflow-y: auto;
+				opacity: 0.75;
+
+				&__dropdown-element {
+					display: block;
+					padding: 5px;
+					cursor: $cursor;
+
+					&:hover {
+						background: #e6e6e6;
+					}
+				}
 			}
 		}
 	}

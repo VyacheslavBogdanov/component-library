@@ -58,10 +58,8 @@ const daysNames = ref<string[]>([]);
 
 const loadData = async () => {
 	try {
-		const headerItems = await fetchData('/calendar-header-item');
-		const days = await fetchData('/days-names');
-		calendarHeaderItem.value = headerItems as CalendarHeaderItem[];
-		daysNames.value = days as string[];
+		calendarHeaderItem.value = await fetchData('/calendar-header-item');
+		daysNames.value = await fetchData('/days-names');
 	} catch (error) {
 		console.error(error);
 	}
@@ -108,7 +106,6 @@ const ToggleHeaderDate = (type: 'month' | 'year', route: 'prev' | 'next') => {
 	width: 200px;
 	height: 30px;
 	font-family: $font-family;
-	margin: $date-picker-margin;
 }
 
 .calendar {
@@ -116,7 +113,7 @@ const ToggleHeaderDate = (type: 'month' | 'year', route: 'prev' | 'next') => {
 	flex-direction: column;
 	align-items: center;
 	position: relative;
-	top: 2px;
+	top: 20px;
 	width: 500px;
 	height: 500px;
 	border: 1px solid $border-color;
@@ -124,6 +121,5 @@ const ToggleHeaderDate = (type: 'month' | 'year', route: 'prev' | 'next') => {
 	padding: 10px;
 	font-family: $font-family;
 	font-weight: 150;
-	margin: $date-picker-margin;
 }
 </style>
