@@ -5,15 +5,36 @@
 			class="informer__theme-toggle"
 			@click="theme = theme === 'informer--light' ? 'informer--dark' : 'informer--light'"
 		>
-			{{ theme === 'dark' ? 'Light' : 'Dark' }}
+			{{ theme === 'informer--dark' ? 'Light' : 'Dark' }}
 		</button>
+		<Inform :messageTypes="messageTypes" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { fetchData } from '../mocks/db.js';
+import Inform from './Inform/Inform.vue';
+
+interface MessageTypes {
+	class: string;
+	message: string;
+}
 
 const theme = ref<string>('informer--light');
+const messageTypes = ref<MessageTypes[]>([]);
+
+const loadData = async () => {
+	try {
+		messageTypes.value = await fetchData('/message-types');
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+onMounted(() => {
+	loadData();
+});
 </script>
 
 <style lang="scss" scoped>

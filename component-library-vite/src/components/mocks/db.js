@@ -98,8 +98,8 @@ const mockAPI = (endpoint) => {
 				resolve(calendarHeaderItem);
 			} else if (endpoint === '/days-names') {
 				resolve(daysNames);
-			} else if (endpoint === '/days-names') {
-				resolve(daysNames);
+			} else if (endpoint === '/message-types') {
+				resolve(messageTypes);
 			} else {
 				reject({ error: 'Not Found', status: 404 });
 			}

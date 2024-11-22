@@ -8,7 +8,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({});
+interface MessageTypes {
+	class: string;
+	message: string;
+}
+const props = defineProps<{
+	messageTypes: MessageTypes[];
+}>();
 </script>
 
 <style lang="scss" scoped>
