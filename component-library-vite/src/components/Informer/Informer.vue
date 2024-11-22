@@ -7,19 +7,15 @@
 		>
 			{{ theme === 'informer--dark' ? 'Light' : 'Dark' }}
 		</button>
-		<Inform :messageTypes="messageTypes" />
+		<Inform :messageTypes="messageTypes" :theme="theme" />
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { fetchData } from '../mocks/db.js';
+import { MessageTypes } from './utils/types.js';
 import Inform from './Inform/Inform.vue';
-
-interface MessageTypes {
-	class: string;
-	message: string;
-}
 
 const theme = ref<string>('informer--light');
 const messageTypes = ref<MessageTypes[]>([]);
@@ -37,10 +33,11 @@ onMounted(() => {
 });
 </script>
 
+<!-- Вынести переменные в отдельный файл -->
+
 <style lang="scss" scoped>
 .informer {
 	padding: 16px;
-	margin: 16px;
 	display: flex;
 	border-radius: 8px;
 	flex-direction: column;
@@ -64,12 +61,12 @@ onMounted(() => {
 			background-color 0.3s,
 			color 0.3s;
 	}
-	&.informer--light {
+	&--light {
 		background-color: #fff;
 		color: #484747;
 	}
 
-	&.informer--dark {
+	&--dark {
 		background-color: #484747;
 		color: #fff;
 	}

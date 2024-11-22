@@ -1,20 +1,28 @@
 <template>
-	<div v-for="(type, index) in messageTypes" :key="index" :class="['inform', type.class, theme]">
-		<div :class="theme === 'dark' ? 'dark-text' : 'light-text'">
-			<div class="icon">ⓘ</div>
+	<div v-for="(type, index) in messageTypes" :key="index" :class="['inform', type.class]">
+		<div :class="getTextColorModifier(type.class)">
+			<div class="inform__icon">ⓘ</div>
 			{{ type.message }}
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-interface MessageTypes {
-	class: string;
-	message: string;
-}
+import { MessageTypes } from '../utils/types.js';
+
 const props = defineProps<{
+	theme: string;
 	messageTypes: MessageTypes[];
 }>();
+
+const getTextColorModifier = (modifier: string): string | undefined => {
+	if (props.theme === 'informer--dark') {
+		if (modifier === 'inform--default') {
+			return 'inform--dark-theme-text';
+		}
+	}
+	return undefined;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -31,7 +39,7 @@ const props = defineProps<{
 	font-family: sans-serif;
 	height: 40px;
 
-	.icon {
+	&__icon {
 		display: flex;
 		position: absolute;
 		transform: rotate(180deg);
@@ -39,54 +47,33 @@ const props = defineProps<{
 		height: 30px;
 	}
 
-	&.inform--success {
+	&--success {
 		background-color: #e0fde7;
 		color: #2a9b44;
 	}
 
-	&.dark {
-		background-color: #7de17d;
-		color: #1c6e1c;
-	}
-
-	&.inform--warning {
+	&--warning {
 		background-color: #f9ebd8;
 		color: #d77417;
-
-		&.dark {
-			background-color: #fcbe91;
-			color: #9b5a17;
-		}
 	}
 
-	&.inform--error {
+	&--error {
 		background-color: #f2dee0;
 		color: #db1428;
-
-		&.dark {
-			background-color: #e58d8d;
-			color: #db1428;
-		}
 	}
 
-	&.inform--info {
+	&--info {
 		background-color: #e3e3ff;
 		color: #1052ec;
-
-		&.dark {
-			background-color: #c3c8f2;
-			color: #1a1fa1;
-		}
 	}
 
-	&.inform--default {
+	&--default {
 		background-color: #cecece;
 		color: #000;
+	}
 
-		&.dark {
-			background-color: #a6a6a6;
-			color: #ffffff;
-		}
+	&--dark-theme-text {
+		color: #fff;
 	}
 }
 </style>
