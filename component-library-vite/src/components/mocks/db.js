@@ -51,8 +51,6 @@ const people = [
 	'Афанасьев Н.А.',
 ];
 
-  
-
 const months = [
 	'Январь',
 	'Февраль',
@@ -83,6 +81,13 @@ const calendarHeaderItem = [
 	},
 ];
 
+const messageTypes = [
+	{ class: 'inform--success', message: 'This is a SUCCESS message' },
+	{ class: 'inform--warning', message: 'This is a WARNING message' },
+	{ class: 'inform--error', message: 'This is an ERROR message' },
+	{ class: 'inform--info', message: ' This is an INFO message' },
+	{ class: 'inform--default', message: ' This is a message' },
+];
 
 const mockAPI = (endpoint) => {
 	return new Promise((resolve, reject) => {
@@ -91,6 +96,8 @@ const mockAPI = (endpoint) => {
 				resolve(people);
 			} else if (endpoint === '/calendar-header-item') {
 				resolve(calendarHeaderItem);
+			} else if (endpoint === '/days-names') {
+				resolve(daysNames);
 			} else if (endpoint === '/days-names') {
 				resolve(daysNames);
 			} else {
