@@ -1,6 +1,6 @@
 <template>
 	<div v-for="(type, index) in messageTypes" :key="index" :class="['inform', type.class]">
-		<div :class="getTextColorModifier(type.class)">
+		<div :class="getTextColorModifier(props.theme, type.class)">
 			<div class="inform__icon">ⓘ</div>
 			{{ type.message }}
 		</div>
@@ -9,35 +9,28 @@
 
 <script setup lang="ts">
 import { MessageTypes } from '../utils/types.js';
+import { getTextColorModifier } from '../utils/getTextColorModifier.ts';
 
 const props = defineProps<{
 	theme: string;
 	messageTypes: MessageTypes[];
 }>();
-
-const getTextColorModifier = (modifier: string): string | undefined => {
-	if (props.theme === 'informer--dark') {
-		if (modifier === 'inform--default') {
-			return 'inform--dark-theme-text';
-		}
-	}
-	return undefined;
-};
 </script>
 
 <style lang="scss" scoped>
+@import '../utils/variables.scss';
+
 .inform {
 	position: relative;
 	display: flex;
 	align-items: center;
 	padding: 10px 30px 10px 40px;
-	border-radius: 8px;
-	font-family: Arial, sans-serif;
+	border-radius: $border-radius;
 	max-width: fit-content;
 	word-wrap: break-word;
 	font-size: 23px;
-	font-family: sans-serif;
 	height: 40px;
+	opacity: 0.85;
 
 	&__icon {
 		display: flex;
@@ -73,7 +66,7 @@ const getTextColorModifier = (modifier: string): string | undefined => {
 	}
 
 	&--dark-theme-text {
-		color: #fff;
+		color: $color-white;
 	}
 }
 </style>

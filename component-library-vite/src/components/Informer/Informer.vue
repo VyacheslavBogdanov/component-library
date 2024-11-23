@@ -33,18 +33,19 @@ onMounted(() => {
 });
 </script>
 
-<!-- Вынести переменные в отдельный файл -->
+<style lang="scss">
+@import './utils/variables.scss';
 
-<style lang="scss" scoped>
 .informer {
+	font-family: sans-serif;
 	padding: 16px;
 	display: flex;
-	border-radius: 8px;
+	border-radius: $border-radius;
 	flex-direction: column;
 	gap: 30px;
 	transition:
-		background-color 0.3s,
-		color 0.3s;
+		background-color 0.5s,
+		color 0.5s;
 	width: 400px;
 
 	&__theme-toggle {
@@ -52,23 +53,20 @@ onMounted(() => {
 		background-color: transparent;
 		border: 1.5px solid #9f979773;
 		color: inherit;
-		border-radius: 8px;
+		border-radius: $border-radius;
 		padding: 4px 8px;
 		cursor: pointer;
-		font-family: sans-serif;
 		text-decoration: none;
-		transition:
-			background-color 0.3s,
-			color 0.3s;
 	}
+
 	&--light {
-		background-color: #fff;
-		color: #484747;
+		background-color: $color-white;
+		color: $color-dark-gray;
 	}
 
 	&--dark {
-		background-color: #484747;
-		color: #fff;
+		background-color: $color-dark-gray;
+		color: $color-white;
 	}
 }
 </style>
