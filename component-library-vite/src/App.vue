@@ -1,13 +1,13 @@
 <template>
 	<div id="app">
-		<Search />
-		<DatePicker />
+		<!-- <DatePicker /> -->
+		<!-- <Search /> -->
 		<!-- <DropdownWithSearch />
 		<CheckboxFilter />
 		<RadioButtonFilter />
-		<Chips />
 		<ChipsFilter /> -->
-		<Informer />
+		<!-- <Informer /> -->
+		<Chips />
 	</div>
 </template>
 
@@ -16,7 +16,7 @@ import Search from '@/components/Search/Search/SearchForm.vue';
 // import DropdownWithSearch from '@/components/DropdownWithSearch/DropdownWithSearch.vue';
 // import CheckboxFilter from '@/components/CheckboxFilter/CheckboxFilter.vue';
 // import RadioButtonFilter from '@/components/RadioButtonFilter/RadioButtonFilter.vue';
-// import Chips from '@/components/Chips/Chips.vue';
+import Chips from '@/components/Chips/Chips.vue';
 // import ChipsFilter from '@/components/ChipsFilter/ChipsFilter.vue';
 import DatePicker from '@/components/DatePicker/DatePicker.vue';
 import Informer from '@/components/Informer/Informer.vue';
