@@ -1,6 +1,6 @@
 <template>
 	<ul class="radio-list">
-		<li class="radio-list__item" v-if="!noResults">
+		<li v-if="!noResults" class="radio-list__item">
 			<label class="radio-list__label">
 				<input
 					type="radio"
@@ -11,7 +11,8 @@
 				<span class="radio-list__text">Не выбрано</span>
 			</label>
 		</li>
-		<li class="radio-list__item" v-for="(item, index) in items" :key="index">
+
+		<li v-for="(item, index) in items" :key="index" class="radio-list__item">
 			<label class="radio-list__label">
 				<input
 					type="radio"
@@ -23,19 +24,21 @@
 			</label>
 		</li>
 	</ul>
+
 	<div v-if="noResults" class="radio-list__no-results">Результаты не найдены</div>
 </template>
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue';
+import type { PropType } from 'vue';
 
 const props = defineProps({
 	items: {
-		type: Array as () => string[],
+		type: Array as PropType<string[]>,
 		required: true,
 	},
 	modelValue: {
-		type: String,
+		type: String as PropType<string | null>,
 		default: null,
 	},
 	noResults: {
@@ -44,7 +47,10 @@ const props = defineProps({
 	},
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+	(e: 'update:modelValue', value: string | null): void;
+}>();
+
 const localSelectedItem = ref<string | null>(props.modelValue);
 
 const updateValue = (newValue: string | null) => {
@@ -70,10 +76,6 @@ const updateValue = (newValue: string | null) => {
 
 		&:hover {
 			background-color: #f5f5f5;
-		}
-
-		&--selected {
-			background-color: #e0f7fa;
 		}
 	}
 

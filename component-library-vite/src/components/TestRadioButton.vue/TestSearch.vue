@@ -4,29 +4,38 @@
 			type="text"
 			v-model="localSearchQuery"
 			placeholder="Поиск"
-			@focus="$emit('focus')"
+			@focus="handleFocus"
 			class="search-wrapper__input"
 		/>
-		<div class="search-wrapper__icon"></div>
+		<div class="search-wrapper__icon" />
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, watch } from 'vue';
+import type { PropType } from 'vue';
 
 const props = defineProps({
 	modelValue: {
-		type: String,
+		type: String as PropType<string>,
 		default: '',
 	},
 });
 
-const emit = defineEmits(['update:modelValue', 'focus']);
-const localSearchQuery = ref(props.modelValue);
+const emit = defineEmits<{
+	(e: 'update:modelValue', value: string): void;
+	(e: 'focus'): void;
+}>();
+
+const localSearchQuery = ref<string>(props.modelValue);
 
 watch(localSearchQuery, (newValue) => {
 	emit('update:modelValue', newValue);
 });
+
+const handleFocus = () => {
+	emit('focus');
+};
 </script>
 
 <style lang="scss" scoped>
@@ -35,7 +44,8 @@ watch(localSearchQuery, (newValue) => {
 .search-wrapper {
 	position: relative;
 	width: 95%;
-	margin: auto;
+	margin-left: auto;
+	margin-right: auto;
 
 	&__input {
 		width: 100%;
@@ -48,6 +58,10 @@ watch(localSearchQuery, (newValue) => {
 		color: #333;
 		box-sizing: border-box;
 		transition: border-color 0.2s;
+
+		&--focused {
+			border-color: $focus-color;
+		}
 
 		&:focus {
 			border-color: $focus-color;
@@ -85,7 +99,7 @@ watch(localSearchQuery, (newValue) => {
 			transform: rotate(-45deg) translate(2px, 17px);
 		}
 
-		.search-wrapper:has(.search-wrapper__input:focus) & {
+		.search-wrapper__input:focus + & {
 			&::before {
 				border-color: $focus-color;
 			}

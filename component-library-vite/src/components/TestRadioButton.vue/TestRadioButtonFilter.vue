@@ -39,14 +39,14 @@ import { debounce } from './utils/utils.js';
 import TestSearch from './TestSearch.vue';
 import TestRadioButtonList from './TestRadioButtonList.vue';
 
-const isDropdownVisible = ref(false);
-const searchQuery = ref('');
+const isDropdownVisible = ref<boolean>(false);
+const searchQuery = ref<string>('');
 const selectedItem = ref<string | undefined>(undefined);
 const people = ref<string[]>([]);
 const filteredList = ref<string[]>([]);
-const noResultsFound = ref(false);
+const noResultsFound = ref<boolean>(false);
 
-const filterAndSortList = (query: string) => {
+const filterAndSortList = (query: string): string[] => {
 	return people.value
 		.filter((item) => item.toLowerCase().startsWith(query.toLowerCase()))
 		.sort((a, b) => a.localeCompare(b));
@@ -109,13 +109,13 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 @import './utils/style-variables.scss';
-
 .filter {
 	width: $width-checkbox;
 	display: flex;
 	flex-direction: column;
 	position: relative;
-	margin-top: 50px;
+	margin-top: 24px;
+	margin-bottom: 24px;
 
 	&__label {
 		position: absolute;
@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
 		font-size: 14px;
 		color: #00000094;
 		font-family: $font-allelement;
-		z-index: 1;
+		z-index: 2;
 
 		&--active {
 			color: $focus-color;
@@ -136,6 +136,7 @@ onBeforeUnmount(() => {
 	&__input-wrapper {
 		position: relative;
 		display: flex;
+		z-index: 1;
 	}
 
 	&__input {
@@ -177,7 +178,9 @@ onBeforeUnmount(() => {
 	}
 
 	&__dropdown {
-		position: relative;
+		position: absolute;
+		top: 100%;
+		left: 0;
 		background-color: white;
 		border: 1.5px solid $focus-color;
 		border-radius: 0 0 8px 8px;
@@ -190,6 +193,7 @@ onBeforeUnmount(() => {
 		box-sizing: border-box;
 		display: flex;
 		flex-direction: column;
+		z-index: 10;
 	}
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
 	<div id="app">
+		<TestRadioButtonFilter />
 		<Search />
 		<!-- <DropdownWithSearch />
 		<CheckboxFilter /> -->
@@ -9,7 +10,6 @@
 		<DatePicker />
 		<Informer />
 		<TestComponent />  -->
-		<TestRadioButtonFilter />
 	</div>
 </template>
 
