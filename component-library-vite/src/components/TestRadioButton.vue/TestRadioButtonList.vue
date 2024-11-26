@@ -11,12 +11,7 @@
 				<span class="radio-list__text">Не выбрано</span>
 			</label>
 		</li>
-		<li
-			class="radio-list__item"
-			v-for="(item, index) in items"
-			:key="index"
-			:class="{ 'radio-list__item--selected': localSelectedItem === item }"
-		>
+		<li class="radio-list__item" v-for="(item, index) in items" :key="index">
 			<label class="radio-list__label">
 				<input
 					type="radio"

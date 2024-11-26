@@ -3,15 +3,17 @@
 		<label :class="['filter__label', { 'filter__label--active': isDropdownVisible }]"
 			>Исполнитель</label
 		>
-		<input
-			readonly
-			type="text"
-			class="filter__input"
-			:value="displayText"
-			@focus="toggleDropdown(true)"
-			:class="{ 'filter__input--has-dropdown': isDropdownVisible }"
-		/>
-
+		<div class="filter__input-wrapper">
+			<input
+				readonly
+				type="text"
+				class="filter__input"
+				:value="displayText"
+				@focus="toggleDropdown(true)"
+				:class="{ 'filter__input--has-dropdown': isDropdownVisible }"
+			/>
+			<div class="filter__icon" :class="{ 'filter__icon--open': isDropdownVisible }">⌃</div>
+		</div>
 		<div v-if="isDropdownVisible" class="filter__dropdown">
 			<TestSearch
 				v-if="showSearch"
@@ -19,7 +21,6 @@
 				v-model="searchQuery"
 				@focus="toggleDropdown(true)"
 			/>
-
 			<TestRadioButtonList
 				class="filter__list"
 				:items="itemsToDisplay"
@@ -113,21 +114,28 @@ onBeforeUnmount(() => {
 	width: $width-checkbox;
 	display: flex;
 	flex-direction: column;
+	position: relative;
+	margin-top: 50px;
 
 	&__label {
-		position: relative;
-		font-size: 16px;
+		position: absolute;
+		top: -8px;
+		left: 12px;
+		background-color: white;
+		padding: 0 5px;
+		font-size: 14px;
 		color: #00000094;
 		font-family: $font-allelement;
-		top: 10px;
-		left: 15px;
-		background-color: white;
-		padding: 0 3px;
-		width: min-content;
+		z-index: 1;
 
 		&--active {
 			color: $focus-color;
 		}
+	}
+
+	&__input-wrapper {
+		position: relative;
+		display: flex;
 	}
 
 	&__input {
@@ -148,6 +156,23 @@ onBeforeUnmount(() => {
 			border-bottom: none;
 			border-radius: 8px 8px 0 0;
 			border-color: $focus-color;
+		}
+	}
+
+	&__icon {
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-35%);
+		font-size: 23px;
+		color: #0a00007d;
+		transition:
+			transform 0.1s ease,
+			color 0.2s ease;
+
+		&--open {
+			transform: translateY(-65%) rotate(180deg);
+			color: #0a0000c2;
 		}
 	}
 

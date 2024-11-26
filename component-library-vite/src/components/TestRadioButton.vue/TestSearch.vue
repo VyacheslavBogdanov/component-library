@@ -7,6 +7,7 @@
 			@focus="$emit('focus')"
 			class="search-wrapper__input"
 		/>
+		<div class="search-wrapper__icon"></div>
 	</div>
 </template>
 
@@ -33,8 +34,8 @@ watch(localSearchQuery, (newValue) => {
 
 .search-wrapper {
 	position: relative;
-	width: 80%;
-	justify-content: center;
+	width: 95%;
+	margin: auto;
 
 	&__input {
 		width: 100%;
@@ -50,6 +51,47 @@ watch(localSearchQuery, (newValue) => {
 
 		&:focus {
 			border-color: $focus-color;
+		}
+	}
+
+	&__icon {
+		position: absolute;
+		right: 9px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 20px;
+		height: 20px;
+		transition: all 0.2s ease;
+
+		&::before,
+		&::after {
+			content: '';
+			position: absolute;
+			transition: all 0.2s ease;
+		}
+
+		&::before {
+			width: 8.5px;
+			height: 8.5px;
+			border: 1.5px solid #9f979773;
+			border-radius: 50%;
+			transform: translate(2px, 2px);
+		}
+
+		&::after {
+			width: 1.5px;
+			height: 8.5px;
+			background: #9f979773;
+			transform: rotate(-45deg) translate(2px, 17px);
+		}
+
+		.search-wrapper:has(.search-wrapper__input:focus) & {
+			&::before {
+				border-color: $focus-color;
+			}
+			&::after {
+				background: $focus-color;
+			}
 		}
 	}
 }
