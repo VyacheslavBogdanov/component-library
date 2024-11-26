@@ -2,7 +2,8 @@
 	<div class="Chips">
 		<h1>Chips</h1>
 		<div class="filter-container" ref="filterContainer">
-			<label
+			<Select :isDropdownVisible="isDropdownVisible" />
+			<!-- <label
 				:class="{
 					'filter-container__label': true,
 					'filter-container__label--active': isDropdownVisible,
@@ -26,7 +27,7 @@
 					'filter-container__input': true,
 					'filter-container__input--active': isDropdownVisible,
 				}"
-			/>
+			/> -->
 			<div v-if="isDropdownVisible" class="dropdown" @mousedown="handleDropdownClick">
 				<!-- Разобраться с блоком .search-->
 				<div class="search-wrapper" v-if="showSearch">
@@ -93,6 +94,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import Select from './Select/Select.vue';
 
 function debounce<T extends (...args: any[]) => void>(
 	func: T,
