@@ -58,34 +58,4 @@ const updateValue = (newValue: string | null) => {
 };
 </script>
 
-<style lang="scss" scoped>
-.filter__dropdown-list {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-	width: 100%;
-
-	.filter__dropdown-item {
-		padding: 8px;
-		margin: 0;
-		cursor: pointer;
-		text-align: start;
-		position: relative;
-
-		&:hover {
-			background-color: #ece7e773;
-		}
-
-		b {
-			font-weight: bold;
-		}
-	}
-}
-
-.filter__no-results {
-	color: #00000094;
-	position: relative;
-	margin: auto;
-	font-size: 16px;
-}
-</style>
+<style lang="scss" scoped></style>
