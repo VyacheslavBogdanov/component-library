@@ -52,8 +52,9 @@ const props = defineProps<{
 	filteredList: string[];
 	selectAll: boolean;
 	handleSelectAll: any;
-	// selectedYear: number;
-	// selectedMonth: number;
+	updateDisplayText: any;
+	highlightMatch: any;
+	noResultsFound: boolean;
 }>();
 
 const emit = defineEmits<{

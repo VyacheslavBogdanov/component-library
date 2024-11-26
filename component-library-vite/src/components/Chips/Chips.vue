@@ -37,6 +37,9 @@
 				:filteredList="filteredList"
 				:selectAll="selectAll"
 				:handleSelectAll="handleSelectAll"
+				:updateDisplayText="updateDisplayText"
+				:highlightMatch="highlightMatch"
+				:noResultsFound="noResultsFound"
 			/>
 			<div v-if="isDropdownVisible" class="dropdown" @mousedown="handleDropdownClick">
 				<!-- Разобраться с блоком .search-->
