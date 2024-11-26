@@ -27,6 +27,7 @@
 				v-model="selectedItem"
 				:noResults="noResultsFound"
 				@item-selected="onItemSelected"
+				:searchQuery="searchQuery"
 			/>
 		</div>
 	</div>
@@ -80,7 +81,7 @@ const toggleDropdown = (state: boolean) => {
 	}
 };
 
-const itemsToDisplay = computed(() => filteredList.value);
+const itemsToDisplay = computed<string[]>(() => filteredList.value);
 const showSearch = computed(() => people.value.length > 10);
 
 const loadData = async () => {

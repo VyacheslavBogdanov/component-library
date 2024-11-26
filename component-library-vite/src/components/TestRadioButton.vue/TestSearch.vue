@@ -29,10 +29,9 @@ const emit = defineEmits<{
 
 const localSearchQuery = ref<string>(props.modelValue);
 
-watch(localSearchQuery, (newValue) => {
+watch(localSearchQuery, (newValue: string) => {
 	emit('update:modelValue', newValue);
 });
-
 const handleFocus = () => {
 	emit('focus');
 };
