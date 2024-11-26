@@ -22,6 +22,7 @@
 				:items="itemsToDisplay"
 				v-model="selectedItem"
 				:noResults="noResultsFound"
+				@item-selected="onItemSelected"
 			/>
 		</div>
 	</div>
@@ -36,32 +37,25 @@ import TestRadioButtonList from './TestRadioButtonList.vue';
 
 const isDropdownVisible = ref(false);
 const searchQuery = ref('');
-const selectedItem = ref<string | null>(null);
+const selectedItem = ref<string | undefined>(undefined);
 const people = ref<string[]>([]);
 const filteredList = ref<string[]>([]);
 const noResultsFound = ref(false);
 
-const updateFilteredList = debounce(() => {
-	filteredList.value = people.value
-		.filter((item) => item.toLowerCase().startsWith(searchQuery.value.toLowerCase()))
+const filterAndSortList = (query: string) => {
+	return people.value
+		.filter((item) => item.toLowerCase().startsWith(query.toLowerCase()))
 		.sort((a, b) => a.localeCompare(b));
-	noResultsFound.value = filteredList.value.length === 0;
+};
 
-	if (
-		!filteredList.value.includes(selectedItem.value as string) &&
-		filteredList.value.length > 0
-	) {
-		selectedItem.value = filteredList.value[0];
-	} else if (filteredList.value.length === 0) {
-		selectedItem.value = null;
-	}
+const updateFilteredList = debounce(() => {
+	filteredList.value = filterAndSortList(searchQuery.value);
+	noResultsFound.value = filteredList.value.length === 0;
 }, 300);
 
 watch(searchQuery, updateFilteredList);
 
-const displayText = computed(() => {
-	return selectedItem.value !== null ? selectedItem.value : 'Не выбрано';
-});
+const displayText = computed(() => selectedItem.value || 'Не выбрано');
 
 const filterContainer = ref<HTMLElement | null>(null);
 const handleClickOutside = (event: MouseEvent) => {
@@ -76,12 +70,10 @@ const handleClickOutside = (event: MouseEvent) => {
 
 const toggleDropdown = (state: boolean) => {
 	isDropdownVisible.value = state;
-	if (state) {
-		if (!searchQuery.value) {
-			filteredList.value = [...people.value];
-		}
-		noResultsFound.value = false;
+	if (state && !searchQuery.value) {
+		filteredList.value = [...people.value];
 	}
+	noResultsFound.value = false;
 };
 
 const itemsToDisplay = computed(() => filteredList.value);
@@ -90,10 +82,15 @@ const showSearch = computed(() => people.value.length > 10);
 const loadData = async () => {
 	try {
 		people.value = await fetchData('/people');
-		filteredList.value = [...people.value];
+		filteredList.value = filterAndSortList('');
 	} catch (error) {
 		console.error('Ошибка загрузки данных:', error);
 	}
+};
+
+const onItemSelected = (item: string) => {
+	selectedItem.value = item;
+	isDropdownVisible.value = false;
 };
 
 onMounted(() => {
