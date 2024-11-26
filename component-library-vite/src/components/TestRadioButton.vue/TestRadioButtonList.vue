@@ -58,4 +58,53 @@ const updateValue = (newValue: string | null) => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import './utils/style-variables.scss';
+
+.radio-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+
+	&__item {
+		display: flex;
+		align-items: center;
+		padding: 8px;
+		cursor: pointer;
+		transition: background-color 0.2s;
+
+		&:hover {
+			background-color: #f5f5f5;
+		}
+
+		&--selected {
+			background-color: #e0f7fa;
+		}
+	}
+
+	&__label {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		cursor: pointer;
+	}
+
+	&__input {
+		margin-right: 8px;
+		cursor: pointer;
+	}
+
+	&__text {
+		font-size: 16px;
+		color: #333;
+	}
+
+	&__no-results {
+		color: #00000094;
+		position: relative;
+		margin: auto;
+		font-size: 16px;
+		font-family: $font-allelement;
+	}
+}
+</style>

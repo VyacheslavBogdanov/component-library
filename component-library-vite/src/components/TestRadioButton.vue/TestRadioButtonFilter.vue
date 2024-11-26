@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-@import './style-variables.scss';
+@import './utils/style-variables.scss';
 
 .filter {
 	width: $width-checkbox;
@@ -123,7 +123,7 @@ onBeforeUnmount(() => {
 		left: 15px;
 		background-color: white;
 		padding: 0 3px;
-		width: 15%;
+		width: min-content;
 
 		&--active {
 			color: $focus-color;
@@ -160,99 +160,11 @@ onBeforeUnmount(() => {
 		max-height: 400px;
 		overflow-y: auto;
 		width: 100%;
-		transition:
-			border-color 0.2s,
-			box-shadow 0.2s;
+		transition: border-color 0.2s;
 		border-top: #ffffff;
 		box-sizing: border-box;
 		display: flex;
 		flex-direction: column;
-
-		&__search-wrapper {
-			position: relative;
-			width: 95%;
-			margin: 7px 0 0 10px;
-		}
-
-		&__search {
-			width: 100%;
-			height: $height-input;
-			border: 1.5px solid #9f979773;
-			border-radius: 8px;
-			outline: none;
-			padding-right: 40px;
-			padding-left: 10px;
-			box-sizing: border-box;
-			font-size: 16px;
-
-			&:focus {
-				border-color: $focus-color;
-			}
-		}
-
-		&__search-icon {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
-			width: 30px;
-			height: 30px;
-			display: grid;
-			place-items: center;
-			pointer-events: none;
-
-			&::before {
-				content: '';
-				width: 9.5px;
-				height: 9.5px;
-				border: 1.5px solid #9f979773;
-				border-radius: 50%;
-				transition: border-color 0.2s;
-				position: absolute;
-				transform: translate(-2px, -2px);
-			}
-
-			&::after {
-				content: '';
-				position: absolute;
-				width: 1.5px;
-				height: 9.5px;
-				background: #9f979773;
-				transition: border-color 0.2s;
-				transform: rotate(-45deg) translate(-0px, 7px);
-			}
-		}
-
-		&__dropdown-list {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-			width: 100%;
-
-			&__dropdown-item {
-				padding: 8px;
-				margin: 0;
-				cursor: pointer;
-				text-align: start;
-				position: relative;
-
-				&:hover {
-					background-color: #ece7e773;
-				}
-
-				b {
-					font-weight: bold;
-				}
-			}
-		}
-
-		&__no-results {
-			color: #00000094;
-			position: relative;
-			margin: auto;
-			font-size: 16px;
-			font-family: $font-allelement;
-		}
 	}
 }
 </style>
