@@ -2,8 +2,8 @@
 	<div class="Chips">
 		<h1>Chips</h1>
 		<div class="filter-container" ref="filterContainer">
-			<Select :isDropdownVisible="isDropdownVisible" />
-			<!-- <label
+			<!-- <Select :isDropdownVisible="isDropdownVisible" /> -->
+			<label
 				:class="{
 					'filter-container__label': true,
 					'filter-container__label--active': isDropdownVisible,
@@ -27,7 +27,17 @@
 					'filter-container__input': true,
 					'filter-container__input--active': isDropdownVisible,
 				}"
-			/> -->
+			/>
+			<Dropdown
+				@showDropdown="(bool: boolean) => (isDropdownVisible = bool)"
+				:isDropdownVisible="isDropdownVisible"
+				:items="items"
+				:checkedItems="checkedItems"
+				:searchQuery="searchQuery"
+				:filteredList="filteredList"
+				:selectAll="selectAll"
+				:handleSelectAll="handleSelectAll"
+			/>
 			<div v-if="isDropdownVisible" class="dropdown" @mousedown="handleDropdownClick">
 				<!-- Разобраться с блоком .search-->
 				<div class="search-wrapper" v-if="showSearch">
@@ -94,7 +104,26 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { fetchData } from '../mocks/db';
 import Select from './Select/Select.vue';
+
+const tooltipText = ref<string | null>(null);
+const tooltipStyle = ref<Record<string, string>>({});
+const isDropdownVisible = ref<boolean>(false);
+const searchQuery = ref<string>('');
+const selectAll = ref<boolean>(false);
+const checkedItems = ref<string[]>([]);
+const items = ref<string[]>([]);
+const noResultsFound = ref<boolean>(false);
+const filteredList = ref<string[]>(items.value);
+
+const loadData = async () => {
+	try {
+		items.value = await fetchData('/people');
+	} catch (error) {
+		console.error('Error loading data:', error);
+	}
+};
 
 function debounce<T extends (...args: any[]) => void>(
 	func: T,
@@ -108,71 +137,6 @@ function debounce<T extends (...args: any[]) => void>(
 		}, wait);
 	};
 }
-
-const tooltipText = ref<string | null>(null);
-const tooltipStyle = ref<Record<string, string>>({});
-const isDropdownVisible = ref<boolean>(false);
-const searchQuery = ref<string>('');
-const selectAll = ref<boolean>(false);
-const checkedItems = ref<string[]>([]);
-const items = ref<string[]>(
-	[
-		'aaaaaaaaaaaaaaaaaa',
-		'AAAAAAAAAAAAAAAAAA',
-		'1234567890123456789012345',
-		'Ивановвввввввввввввввввввв Д.С.',
-		'Кузнецоввввввввввввввввв Е.М.',
-		'Попов Н.А.',
-		'Лебедев И.П.',
-		'Козлов В.Н.',
-		'Новиков А.Д.',
-		'Морозов С.А.',
-		'Петров Е.В.',
-		'Васильев А.С.',
-		'Соколов В.И.',
-		'Михайлов О.В.',
-		'Фёдоров Д.Л.',
-		'Орлов И.К.',
-		'Волков А.А.',
-		'Андреев П.С.',
-		'Никитин О.В.',
-		'Захаров А.И.',
-		'Куликов Д.П.',
-		'Александровв С.В.',
-		'Дмитриев В.Н.',
-		'Ковалёв Е.М.',
-		'Ситников Л.П.',
-		'Григорьев В.Д.',
-		'Гордеев А.С.',
-		'Антонов И.Н.',
-		'Ефимов В.П.',
-		'Тимофеев Д.В.',
-		'Филиппов Е.С.',
-		'Макаров О.А.',
-		'Сидоров В.Д.',
-		'Чернов И.П.',
-		'Савельев Н.В.',
-		'Павлов А.С.',
-		'Богданов С.К.',
-		'Мартынов Е.В.',
-		'Воробьёв А.М.',
-		'Антипов Д.А.',
-		'Тарасов В.О.',
-		'Беляев Л.В.',
-		'Комаров И.С.',
-		'Мельников Е.К.',
-		'Шевченко С.В.',
-		'Емельянов О.П.',
-		'Князев В.А.',
-		'Белов Е.И.',
-		'Щербаков С.Д.',
-		'Назаров Д.В.',
-		'Кочетов О.С.',
-		'Афанасьев Н.А.',
-	].sort(),
-);
-const noResultsFound = ref<boolean>(false);
-const filteredList = ref<string[]>(items.value);
 
 const showTooltip = (chip: string, event: MouseEvent) => {
 	if (chip.length > 17) {
@@ -232,18 +196,19 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
 	document.addEventListener('mousedown', handleClickOutside);
+	loadData();
 });
 
 onBeforeUnmount(() => {
 	document.removeEventListener('mousedown', handleClickOutside);
 });
 
-const handleDropdownClick = (event: MouseEvent) => {
-	const target = event.target as HTMLElement;
-	if (!target.classList.contains('search')) {
-		event.preventDefault();
-	}
-};
+// const handleDropdownClick = (event: MouseEvent) => {
+// 	const target = event.target as HTMLElement;
+// 	if (!target.classList.contains('search')) {
+// 		event.preventDefault();
+// 	}
+// };
 
 const handleSelectAll = () => {
 	if (selectAll.value) {
@@ -257,19 +222,19 @@ const updateDisplayText = () => {
 	selectAll.value = checkedItems.value.length === filteredList.value.length;
 };
 
-const itemsToDisplay = computed(() => {
-	if (filteredList.value.length <= 10) return filteredList.value;
+// const itemsToDisplay = computed(() => {
+// 	if (filteredList.value.length <= 10) return filteredList.value;
 
-	const selectedItems = filteredList.value
-		.filter((item) => checkedItems.value.includes(item))
-		.sort((a, b) => a.localeCompare(b));
+// 	const selectedItems = filteredList.value
+// 		.filter((item) => checkedItems.value.includes(item))
+// 		.sort((a, b) => a.localeCompare(b));
 
-	const unselectedItems = filteredList.value.filter((item) => !checkedItems.value.includes(item));
+// 	const unselectedItems = filteredList.value.filter((item) => !checkedItems.value.includes(item));
 
-	return [...selectedItems, ...unselectedItems];
-});
+// 	return [...selectedItems, ...unselectedItems];
+// });
 
-const showSearch = computed(() => items.value.length > 10);
+// const showSearch = computed(() => items.value.length > 10);
 
 const removeChip = (chip: string) => {
 	checkedItems.value = checkedItems.value.filter((item) => item !== chip);

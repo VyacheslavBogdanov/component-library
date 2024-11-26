@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
 	<label
 		:class="{
 			'filter-container__label': true,
@@ -32,4 +32,4 @@ const props = defineProps<{
 	// selectedYear: number;
 	// selectedMonth: number;
 }>();
-</script>
+</script> -->
