@@ -144,7 +144,8 @@ const emit = defineEmits<{
 	(event: 'update:checkedItems', value: string[]): void;
 }>();
 
-console.log('ITEMS', props.items);
+// console.log('ITEMS', props.items);
+// console.log('filteredList', props.filteredList);
 
 const itemsToDisplay = computed(() => {
 	if (props.filteredList.length <= 10) return props.filteredList;
@@ -158,7 +159,9 @@ const itemsToDisplay = computed(() => {
 	return [...selectedItems, ...unselectedItems];
 });
 
-const showSearch = computed(() => props.items.length > 10);
+// console.log('itemsToDisplay', itemsToDisplay);
+
+const showSearch = computed(() => props.filteredList.length > 10);
 
 const toggleItem = (item: string) => {
 	const newCheckedItems = props.checkedItems.includes(item)
