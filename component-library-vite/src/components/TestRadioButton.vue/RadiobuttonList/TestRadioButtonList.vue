@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, computed } from 'vue';
 import type { PropType } from 'vue';
-import { highlightMatch } from './utils/utils';
+import { highlightMatch } from '../utils/utils';
 
 interface HighlightedText {
 	text: string;
@@ -94,7 +94,7 @@ const updateValue = (newValue: string | null): void => {
 </script>
 
 <style lang="scss" scoped>
-@import './utils/style-variables.scss';
+@import '../utils/style-variables.scss';
 
 .radio-list {
 	list-style: none;

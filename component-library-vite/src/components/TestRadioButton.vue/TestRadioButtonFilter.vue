@@ -1,8 +1,8 @@
 <template>
 	<div class="filter" ref="filterContainer">
-		<label :class="['filter__label', { 'filter__label--active': isDropdownVisible }]"
-			>Исполнитель</label
-		>
+		<div :class="['filter__label', { 'filter__label--active': isDropdownVisible }]">
+			Исполнитель
+		</div>
 		<div class="filter__input-wrapper">
 			<input
 				readonly
@@ -15,14 +15,8 @@
 			<div class="filter__icon" :class="{ 'filter__icon--open': isDropdownVisible }">⌃</div>
 		</div>
 		<div v-if="isDropdownVisible" class="filter__dropdown">
-			<TestSearch
-				v-if="showSearch"
-				class="filter__search"
-				v-model="searchQuery"
-				@focus="toggleDropdown(true)"
-			/>
+			<TestSearch v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
 			<TestRadioButtonList
-				class="filter__list"
 				:items="itemsToDisplay"
 				v-model="selectedItem"
 				:noResults="noResultsFound"
@@ -37,8 +31,8 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { fetchData } from './../mocks/db.js';
 import { debounce } from './utils/utils.js';
-import TestSearch from './TestSearch.vue';
-import TestRadioButtonList from './TestRadioButtonList.vue';
+import TestSearch from './SearchRadiobutton/TestSearch.vue';
+import TestRadioButtonList from './RadiobuttonList/TestRadioButtonList.vue';
 
 const isDropdownVisible = ref<boolean>(false);
 const searchQuery = ref<string>('');
