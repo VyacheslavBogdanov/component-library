@@ -29,6 +29,7 @@
 				}"
 			/>
 			<Dropdown
+				v-model="searchQuery"
 				@showDropdown="(bool: boolean) => (isDropdownVisible = bool)"
 				:isDropdownVisible="isDropdownVisible"
 				:items="items"
@@ -41,8 +42,8 @@
 				:highlightMatch="highlightMatch"
 				:noResultsFound="noResultsFound"
 			/>
-			<div v-if="isDropdownVisible" class="dropdown" @mousedown="handleDropdownClick">
-				<!-- Разобраться с блоком .search-->
+			<!-- <div v-if="isDropdownVisible" class="dropdown" @mousedown="handleDropdownClick">
+
 				<div class="search-wrapper" v-if="showSearch">
 					<input
 						class="search"
@@ -53,7 +54,7 @@
 					/>
 					<span class="searchicon"></span>
 				</div>
-				<!-- Разобраться с блоком .search-->
+
 				<ul class="dropdown-list">
 					<li v-if="itemsToDisplay.length > 0" class="dropdown-list__item">
 						<label class="dropdown-list__label">
@@ -84,7 +85,7 @@
 					</li>
 				</ul>
 				<div v-if="noResultsFound" class="no-results">Результаты не найдены</div>
-			</div>
+			</div> -->
 		</div>
 		<div v-if="!isDropdownVisible" class="chips-container">
 			<div
@@ -108,7 +109,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { fetchData } from '../mocks/db';
-import Select from './Select/Select.vue';
+import Dropdown from './Dropdown/Dropdown.vue';
 
 const tooltipText = ref<string | null>(null);
 const tooltipStyle = ref<Record<string, string>>({});
@@ -246,20 +247,22 @@ const removeChip = (chip: string) => {
 </script>
 
 <style lang="scss" scoped>
-$height-input: 45px;
-$focus-color: #007bff;
-$font-allelement: sans-serif;
-$border-color: #9f979773;
-$icon-color: #0a00007d;
-$icon-color-active: #0a0000c2;
-$hover-background: #ece7e773;
-$text-color: #00000094;
-$font-size: 16px;
-$cursor: pointer;
-$chip-bg-color: #e0e0e0;
-$chip-text-color: #333;
-$chip-hover-bg-color: #d0d0d0;
-$chip-border-radius: 16px;
+@import './utils/variables.scss';
+
+// $height-input: 45px;
+// $focus-color: #007bff;
+// $font-allelement: sans-serif;
+// $border-color: #9f979773;
+// $icon-color: #0a00007d;
+// $icon-color-active: #0a0000c2;
+// $hover-background: #ece7e773;
+// $text-color: #00000094;
+// $font-size: 16px;
+// $cursor: pointer;
+// $chip-bg-color: #e0e0e0;
+// $chip-text-color: #333;
+// $chip-hover-bg-color: #d0d0d0;
+// $chip-border-radius: 16px;
 
 .filter-container {
 	position: relative;
@@ -327,131 +330,6 @@ $chip-border-radius: 16px;
 			border-color: $focus-color;
 		}
 	}
-}
-
-.dropdown {
-	position: relative;
-	background-color: white;
-	border: 1.5px solid $focus-color;
-	border-radius: 0 0 8px 8px;
-	min-height: 180px;
-	max-height: 400px;
-	overflow-y: auto;
-	width: 100%;
-	transition:
-		border-color 0.2s,
-		box-shadow 0.2s;
-	border-top: #ffffff;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-
-	// Разобраться с блоком .search
-
-	.search-wrapper {
-		position: relative;
-		width: 95%;
-		margin: 7px 0 0 10px;
-	}
-
-	.search {
-		width: 100%;
-		height: $height-input;
-		border: 1.5px solid $border-color;
-		border-radius: 8px;
-		outline: none;
-		padding-right: 40px;
-		padding-left: 10px;
-		box-sizing: border-box;
-		font-size: $font-size;
-
-		&:focus {
-			border-color: $focus-color;
-
-			~ .searchicon {
-				&::before {
-					border-color: $focus-color;
-				}
-				&::after {
-					background: $focus-color;
-				}
-			}
-		}
-	}
-
-	.searchicon {
-		position: absolute;
-		right: 10px;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 30px;
-		height: 30px;
-		display: grid;
-		place-items: center;
-		pointer-events: none;
-
-		&::before {
-			content: '';
-			width: 9.5px;
-			height: 9.5px;
-			border: 1.5px solid $border-color;
-			border-radius: 50%;
-			transition: border-color 0.2s;
-			position: absolute;
-			transform: translate(-2px, -2px);
-		}
-
-		&::after {
-			content: '';
-			position: absolute;
-			width: 1.5px;
-			height: 9.5px;
-			background: $border-color;
-			transition: border-color 0.2s;
-			transform: rotate(-45deg) translate(-0px, 7px);
-		}
-	}
-
-	// Разобраться с блоком .search
-
-	.dropdown-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		width: 100%;
-
-		&__item {
-			cursor: $cursor;
-			padding: 8px;
-			margin: 0;
-			text-align: start;
-			position: relative;
-
-			&:hover {
-				background-color: $hover-background;
-			}
-		}
-
-		&__label {
-			cursor: $cursor;
-		}
-
-		&__checkbox {
-			cursor: $cursor;
-		}
-
-		// b {
-		// 	font-weight: bold;
-		// }
-	}
-}
-
-.no-results {
-	color: $text-color;
-	position: relative;
-	margin: auto;
-	font-size: $font-size;
-	font-family: $font-allelement;
 }
 
 .chips-container {
