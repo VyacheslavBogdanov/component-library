@@ -16,11 +16,10 @@
 		</div>
 		<div v-if="isDropdownVisible" class="filter__dropdown">
 			<TestSearch v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
-			<TestRadioButtonList
+			<TestCheckboxList
 				:items="itemsToDisplay"
-				v-model="selectedItem"
+				v-model="selectedItems"
 				:noResults="noResultsFound"
-				@item-selected="onItemSelected"
 				:searchQuery="searchQuery"
 			/>
 		</div>
@@ -29,14 +28,14 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import TestSearch from './TestSearch.vue';
+import TestCheckboxList from './TestCheckboxList.vue';
 import { fetchData } from './../mocks/db.js';
 import { debounce } from './utils/utils.js';
-import TestSearch from './SearchRadiobutton/TestSearch.vue';
-import TestRadioButtonList from './RadiobuttonList/TestRadioButtonList.vue';
 
 const isDropdownVisible = ref<boolean>(false);
 const searchQuery = ref<string>('');
-const selectedItem = ref<string | undefined>(undefined);
+const selectedItems = ref<string[]>([]);
 const people = ref<string[]>([]);
 const filteredList = ref<string[]>([]);
 const noResultsFound = ref<boolean>(false);
@@ -54,7 +53,15 @@ const updateFilteredList = debounce(() => {
 
 watch(searchQuery, updateFilteredList);
 
-const displayText = computed(() => selectedItem.value || 'Не выбрано');
+const displayText = computed(() => {
+	if (selectedItems.value.length === 0) {
+		return 'Не выбрано';
+	} else if (selectedItems.value.length === 1) {
+		return selectedItems.value[0];
+	} else {
+		return `Выбрано ${selectedItems.value.length}`;
+	}
+});
 
 const filterContainer = ref<HTMLElement | null>(null);
 const handleClickOutside = (event: MouseEvent) => {
@@ -66,6 +73,7 @@ const handleClickOutside = (event: MouseEvent) => {
 		isDropdownVisible.value = false;
 	}
 };
+
 const toggleDropdown = (state: boolean) => {
 	isDropdownVisible.value = state;
 
@@ -87,11 +95,6 @@ const loadData = async () => {
 	}
 };
 
-const onItemSelected = (item: string) => {
-	selectedItem.value = item;
-	isDropdownVisible.value = false;
-};
-
 onMounted(() => {
 	document.addEventListener('mousedown', handleClickOutside);
 	loadData();
@@ -104,6 +107,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 @import './utils/style-variables.scss';
+
 .filter {
 	width: $width-checkbox;
 	display: flex;
