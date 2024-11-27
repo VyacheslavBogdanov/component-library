@@ -48,7 +48,7 @@ const people = [
 	'Щербаков С.Д.',
 	'Назаров Д.В.',
 	'Кочетов О.С.',
-	'Афанасьев Н.А.',
+	'Афанасьевdiajshdsjadhjsahdlasjhdlajshdasjhdkjsa Н.А.',
 ];
 
 const months = [

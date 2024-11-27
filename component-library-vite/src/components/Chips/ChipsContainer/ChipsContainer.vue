@@ -18,13 +18,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 const props = defineProps<{
 	isDropdownVisible: boolean;
-	showTooltip: any;
-	moveTooltip: any;
-	hideTooltip: any;
-	tooltipText: string | null;
-	tooltipStyle: Record<string, string>;
+
 	checkedItems: string[];
 	removeChip: any;
 	// searchQuery: string;
@@ -40,6 +37,33 @@ const emit = defineEmits<{
 	// (event: 'update:selectAll', value: boolean): void;
 	// (event: 'update:checkedItems', value: string[]): void;
 }>();
+
+const tooltipText = ref<string | null>(null);
+const tooltipStyle = ref<Record<string, string>>({});
+
+const showTooltip = (chip: string, event: MouseEvent) => {
+	if (chip.length > 17) {
+		tooltipText.value = chip;
+		updateTooltipPosition(event);
+	}
+};
+
+const moveTooltip = (event: MouseEvent) => {
+	if (tooltipText.value) {
+		updateTooltipPosition(event);
+	}
+};
+
+const hideTooltip = () => {
+	tooltipText.value = null;
+};
+
+const updateTooltipPosition = (event: MouseEvent) => {
+	tooltipStyle.value = {
+		left: `${event.pageX + 10}px`,
+		top: `${event.pageY + 10}px`,
+	};
+};
 </script>
 <style lang="scss" scoped>
 @import '../utils/variables.scss';
