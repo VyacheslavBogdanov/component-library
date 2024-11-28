@@ -15,8 +15,8 @@
 			<div class="filter__icon" :class="{ 'filter__icon--open': isDropdownVisible }">⌃</div>
 		</div>
 		<div v-if="isDropdownVisible" class="filter__dropdown">
-			<TestSearch v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
-			<TestCheckboxList
+			<SearchCheckBox v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
+			<CheckBoxList
 				:items="itemsToDisplay"
 				v-model="selectedItems"
 				:noResults="noResultsFound"
@@ -28,9 +28,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import TestSearch from './TestSearch.vue';
-import TestCheckboxList from './TestCheckboxList.vue';
-import { fetchData } from './../mocks/db.js';
+import SearchCheckBox from './SearchCheckBox/SearchCheckBox.vue';
+import CheckBoxList from './CheckBoxList/CheckBoxList.vue';
+import { fetchData } from '../mocks/db.js';
 import { debounce } from './utils/utils.js';
 
 const isDropdownVisible = ref<boolean>(false);
@@ -84,7 +84,7 @@ const toggleDropdown = (state: boolean) => {
 };
 
 const itemsToDisplay = computed<string[]>(() => filteredList.value);
-const showSearch = computed(() => people.value.length > 10);
+const showSearch = computed<boolean>(() => people.value.length > 10);
 
 const loadData = async () => {
 	try {

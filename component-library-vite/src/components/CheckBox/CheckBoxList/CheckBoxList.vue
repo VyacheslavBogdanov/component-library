@@ -38,8 +38,7 @@
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, computed } from 'vue';
-import type { PropType } from 'vue';
-import { highlightMatch } from './utils/utils';
+import { highlightMatch } from '../utils/utils';
 
 interface HighlightedText {
 	text: string;
@@ -51,24 +50,12 @@ interface HighlightedItem {
 	highlightedText: HighlightedText[];
 }
 
-const props = defineProps({
-	items: {
-		type: Array as PropType<readonly string[]>,
-		required: true,
-	},
-	modelValue: {
-		type: Array as PropType<string[]>,
-		default: () => [],
-	},
-	noResults: {
-		type: Boolean,
-		default: false,
-	},
-	searchQuery: {
-		type: String,
-		default: '',
-	},
-});
+const props = defineProps<{
+	items: readonly string[];
+	modelValue: string[];
+	noResults: boolean;
+	searchQuery: string;
+}>();
 
 const emit = defineEmits<{
 	(e: 'update:modelValue', value: string[]): void;
@@ -76,7 +63,7 @@ const emit = defineEmits<{
 
 const localSelectedItems = ref<string[]>([...props.modelValue]);
 
-const areAllItemsSelected = computed(() => {
+const areAllItemsSelected = computed<boolean>(() => {
 	return (
 		props.items.length > 0 &&
 		props.items.every((item) => localSelectedItems.value.includes(item))
@@ -93,17 +80,13 @@ const highlightedItems = computed<HighlightedItem[]>(() => {
 		.sort((a, b) => a.localeCompare(b));
 
 	const sortedItems = [...selectedItems, ...unselectedItems];
-
-	return sortedItems.map((item) => {
-		const highlightedText = highlightMatch(item, props.searchQuery);
-		return {
-			original: item,
-			highlightedText,
-		};
-	});
+	return sortedItems.map((item) => ({
+		original: item,
+		highlightedText: highlightMatch(item, props.searchQuery),
+	}));
 });
 
-const toggleSelectAll = () => {
+const toggleSelectAll = (): void => {
 	if (areAllItemsSelected.value) {
 		localSelectedItems.value = [];
 	} else {
@@ -112,7 +95,7 @@ const toggleSelectAll = () => {
 	emit('update:modelValue', localSelectedItems.value);
 };
 
-const onCheckboxChange = (event: Event, item: string) => {
+const onCheckboxChange = (event: Event, item: string): void => {
 	const isChecked = (event.target as HTMLInputElement).checked;
 	if (isChecked) {
 		localSelectedItems.value.push(item);
@@ -124,7 +107,7 @@ const onCheckboxChange = (event: Event, item: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import './utils/style-variables.scss';
+@import '../utils/style-variables.scss';
 
 .checkbox-list {
 	list-style: none;

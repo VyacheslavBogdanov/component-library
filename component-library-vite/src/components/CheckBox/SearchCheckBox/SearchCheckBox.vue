@@ -38,7 +38,7 @@ const handleFocus = () => {
 </script>
 
 <style lang="scss" scoped>
-@import './utils/style-variables.scss';
+@import '../utils/style-variables.scss';
 
 .search-wrapper {
 	position: relative;
