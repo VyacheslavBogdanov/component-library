@@ -68,11 +68,11 @@ const noResultsFound = ref<boolean>(false);
 const filteredList = ref<string[]>(items.value);
 const filterContainer = ref<HTMLElement | null>(null);
 
-console.log('searchQuery', searchQuery);
-
 const loadData = async () => {
 	try {
 		items.value = await fetchData('/people');
+		filteredList.value = [...items.value];
+		noResultsFound.value = filteredList.value.length === 0;
 	} catch (error) {
 		console.error('Error loading data:', error);
 	}
@@ -97,12 +97,22 @@ const handleClickOutside = (event: MouseEvent) => {
 	}
 };
 
+// const updateFilteredList = debounce(() => {
+// 	filteredList.value = items.value.filter((item) =>
+// 		item.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
+// 	);
+
+// 	noResultsFound.value = filteredList.value.length === 0;
+// }, 700);
+
 const updateFilteredList = debounce(() => {
 	filteredList.value = items.value.filter((item) =>
 		item.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
 	);
-
 	noResultsFound.value = filteredList.value.length === 0;
+
+	// Обновление состояния выбора "Выбрать все" при изменении списка
+	selectAll.value = filteredList.value.every((item) => checkedItems.value.includes(item));
 }, 700);
 
 const displayText = computed(() => {
@@ -117,11 +127,23 @@ const highlightMatch = (item: string): string => {
 	return item.replace(regex, '<b>$1</b>');
 };
 
+// const handleSelectAll = () => {
+// 	if (selectAll.value) {
+// 		checkedItems.value = [...filteredList.value];
+// 	} else {
+// 		checkedItems.value = [];
+// 	}
+// };
+
 const handleSelectAll = () => {
 	if (selectAll.value) {
-		checkedItems.value = [...filteredList.value];
+		// Если выбрано "Выбрать все", добавляем все элементы filteredList в checkedItems
+		checkedItems.value = Array.from(new Set([...checkedItems.value, ...filteredList.value]));
 	} else {
-		checkedItems.value = [];
+		// Если снимается "Выбрать все", удаляем элементы filteredList из checkedItems
+		checkedItems.value = checkedItems.value.filter(
+			(item) => !filteredList.value.includes(item),
+		);
 	}
 };
 
