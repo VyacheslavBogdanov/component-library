@@ -13,7 +13,7 @@
 				</label>
 			</li>
 
-			<li v-for="(item, index) in highlightedItems" :key="index" class="checkbox-list__item">
+			<li v-for="item in highlightedItems" :key="item.original" class="checkbox-list__item">
 				<label class="checkbox-list__label">
 					<input
 						type="checkbox"
@@ -77,6 +77,7 @@ const emit = defineEmits<{
 }>();
 
 const localSelectedItems = ref<string[]>([...props.modelValue]);
+
 const areAllItemsSelected = computed(() => {
 	return (
 		props.items.length > 0 &&
@@ -85,7 +86,17 @@ const areAllItemsSelected = computed(() => {
 });
 
 const highlightedItems = computed<HighlightedItem[]>(() => {
-	return props.items.map((item) => {
+	const selectedItems = [...props.items]
+		.filter((item) => localSelectedItems.value.includes(item))
+		.sort((a, b) => a.localeCompare(b));
+
+	const unselectedItems = [...props.items]
+		.filter((item) => !localSelectedItems.value.includes(item))
+		.sort((a, b) => a.localeCompare(b));
+
+	const sortedItems = [...selectedItems, ...unselectedItems];
+
+	return sortedItems.map((item) => {
 		const highlightedText = highlightMatch(item, props.searchQuery);
 		return {
 			original: item,

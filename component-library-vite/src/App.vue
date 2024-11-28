@@ -3,8 +3,8 @@
 		<!-- <RadioButtonFilter /> -->
 		<!-- <Search /> -->
 		<TestCheckBoxFilter />
-		<!-- <DropdownWithSearch />
-		<CheckboxFilter /> -->
+		<!-- <DropdownWithSearch /> -->
+		<CheckboxFilter />
 		<!-- <RadioButtonFilter /> -->
 		<!-- <Chips /> -->
 		<!-- <ChipsFilter />
@@ -19,7 +19,7 @@
 
 // import Search from '@/components/Search/Search/SearchForm.vue';
 // import DropdownWithSearch from '@/components/DropdownWithSearch/DropdownWithSearch.vue';
-// import CheckboxFilter from '@/components/CheckboxFilter/CheckboxFilter.vue';
+import CheckboxFilter from '@/components/CheckboxFilter/CheckboxFilter.vue';
 
 // import RadioButtonFilter from './components/RadioButton/RadioButtonFilter.vue';
 import TestCheckBoxFilter from './components/TestCheckBox/TestCheckBoxFilter.vue';
