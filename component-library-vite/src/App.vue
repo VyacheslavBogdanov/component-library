@@ -1,7 +1,7 @@
 <template>
 	<div id="app">
-		<!-- <RadioButtonFilter /> -->
-		<!-- <Search /> -->
+		<RadioButtonFilter />
+		<!-- <Search />  -->
 		<TestCheckBoxFilter />
 		<!-- <DropdownWithSearch /> -->
 		<CheckboxFilter />
@@ -21,7 +21,7 @@
 // import DropdownWithSearch from '@/components/DropdownWithSearch/DropdownWithSearch.vue';
 import CheckboxFilter from '@/components/CheckboxFilter/CheckboxFilter.vue';
 
-// import RadioButtonFilter from './components/RadioButton/RadioButtonFilter.vue';
+import RadioButtonFilter from './components/RadioButton/RadioButtonFilter.vue';
 import TestCheckBoxFilter from './components/TestCheckBox/TestCheckBoxFilter.vue';
 // import Chips from '@/components/Chips/Chips.vue';
 // import ChipsFilter from '@/components/ChipsFilter/ChipsFilter.vue';

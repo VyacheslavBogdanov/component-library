@@ -1,41 +1,39 @@
 <template>
-	<div class="checkbox-list-wrapper">
-		<ul class="checkbox-list">
-			<li v-if="!noResults" class="checkbox-list__item">
-				<label class="checkbox-list__label">
-					<input
-						type="checkbox"
-						class="checkbox-list__input"
-						:checked="areAllItemsSelected"
-						@change="toggleSelectAll"
-					/>
-					<span class="checkbox-list__text">Все</span>
-				</label>
-			</li>
+	<ul class="checkbox-list">
+		<li v-if="!noResults" class="checkbox-list__item">
+			<label class="checkbox-list__label">
+				<input
+					type="checkbox"
+					class="checkbox-list__input"
+					:checked="areAllItemsSelected"
+					@change="toggleSelectAll"
+				/>
+				<span class="checkbox-list__text">Все</span>
+			</label>
+		</li>
 
-			<li v-for="item in highlightedItems" :key="item.original" class="checkbox-list__item">
-				<label class="checkbox-list__label">
-					<input
-						type="checkbox"
-						class="checkbox-list__input"
-						:checked="localSelectedItems.includes(item.original)"
-						@change="(event) => onCheckboxChange(event, item.original)"
-					/>
-					<span class="checkbox-list__text">
-						<span
-							v-for="(part, idx) in item.highlightedText"
-							:key="idx"
-							class="checkbox-list__highlighted-text"
-							:class="{ 'checkbox-list__highlighted-text--bold': part.highlighted }"
-						>
-							{{ part.text }}
-						</span>
+		<li v-for="item in highlightedItems" :key="item.original" class="checkbox-list__item">
+			<label class="checkbox-list__label">
+				<input
+					type="checkbox"
+					class="checkbox-list__input"
+					:checked="localSelectedItems.includes(item.original)"
+					@change="(event) => onCheckboxChange(event, item.original)"
+				/>
+				<span class="checkbox-list__text">
+					<span
+						v-for="(part, idx) in item.highlightedText"
+						:key="idx"
+						class="checkbox-list__highlighted-text"
+						:class="{ 'checkbox-list__highlighted-text--bold': part.highlighted }"
+					>
+						{{ part.text }}
 					</span>
-				</label>
-			</li>
-		</ul>
-		<div v-if="noResults" class="checkbox-list__no-results">Результаты не найдены</div>
-	</div>
+				</span>
+			</label>
+		</li>
+	</ul>
+	<div v-if="noResults" class="checkbox-list__no-results">Результаты не найдены</div>
 </template>
 
 <script setup lang="ts">
@@ -171,12 +169,9 @@ const onCheckboxChange = (event: Event, item: string) => {
 	}
 
 	&__no-results {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
-		text-align: center;
 		color: #00000094;
+		position: relative;
+		margin: auto;
 		font-size: 16px;
 		font-family: $font-allelement;
 	}
