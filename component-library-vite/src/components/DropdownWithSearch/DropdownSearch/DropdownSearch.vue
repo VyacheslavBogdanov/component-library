@@ -1,5 +1,4 @@
 <template>
-	<h1>Search</h1>
 	<div
 		class="searchbox"
 		:class="{
@@ -24,9 +23,9 @@
 			}"
 			class="searchbox__placeholder"
 		>
-			Поиск
+			Комментарий
 		</label>
-		<div class="searchbox__icon"></div>
+		<div class="searchbox__icon" :class="{ 'searchbox__icon--open': showDropdown }">⌃</div>
 		<DropdownList
 			v-if="showDropdown"
 			:items="filteredList"
@@ -41,7 +40,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { fetchData } from '../../mocks/db.js';
 import { debounce, highlightMatch } from '../utils/utils.js';
-import DropdownList from '../Dropdown.vue/DropdownList.vue';
+import DropdownList from '../DropdownList/DropdownList.vue';
 
 const searchQuery = ref<string>('');
 const filteredList = ref<string[]>([]);
@@ -51,19 +50,19 @@ const userIsSelecting = ref<boolean>(false);
 const searchboxContainer = ref<HTMLDivElement | null>(null);
 
 const updateFilteredList = debounce(() => {
-	if (searchQuery.value.trim().length > 0) {
+	if (searchQuery.value.trim().length === 0) {
+		filteredList.value = [...people.value];
+	} else {
 		filteredList.value = people.value
 			.filter((name: string) =>
 				name.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
 			)
 			.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-	} else {
-		filteredList.value = [];
 	}
 }, 300);
 
 const showDropdown = computed(() => {
-	return filteredList.value.length > 0 && searchQuery.value.trim().length > 0;
+	return isFocused.value && filteredList.value.length > 0;
 });
 
 const handleFocus = (focus: boolean) => {
@@ -73,6 +72,7 @@ const handleFocus = (focus: boolean) => {
 		filteredList.value = [];
 	} else {
 		isFocused.value = true;
+		updateFilteredList();
 	}
 };
 
@@ -98,7 +98,10 @@ const selectItem = (name: string): void => {
 
 const loadData = async () => {
 	try {
-		people.value = await fetchData('/people');
+		people.value = (await fetchData('/people')).sort((a: string, b: string) =>
+			a.toLowerCase().localeCompare(b.toLowerCase()),
+		);
+		filteredList.value = [...people.value];
 	} catch (error) {
 		console.error('Error loading data:', error);
 	}
@@ -124,28 +127,11 @@ onBeforeUnmount(() => {
 	width: $width-container;
 
 	&--focused {
-		.searchbox__icon {
-			&::before {
-				border-color: $color-border-focus;
-			}
-			&::after {
-				background-color: $color-border-focus;
-			}
-		}
 		.searchbox__input {
 			border-color: $color-border-focus;
 		}
 	}
 	&--filled {
-		.searchbox__icon {
-			&::before {
-				border-color: $color-border-focus;
-			}
-			&::after {
-				background-color: $color-border-focus;
-			}
-		}
-
 		.searchbox__input {
 			border-color: $color-border-focus;
 		}
@@ -198,33 +184,18 @@ onBeforeUnmount(() => {
 
 	&__icon {
 		position: absolute;
-		right: 9px;
+		right: 10px;
 		top: 50%;
-		transform: translateY(-50%);
-		width: 20px;
-		height: 20px;
-		transition: all 0.2s ease;
+		transform: translateY(-35%);
+		font-size: 23px;
+		color: #0a00007d;
+		transition:
+			transform 0.1s ease,
+			color 0.2s ease;
 
-		&::before,
-		&::after {
-			content: '';
-			position: absolute;
-			transition: all 0.2s ease;
-		}
-
-		&::before {
-			width: 8.5px;
-			height: 8.5px;
-			border: 1.5px solid #9f979773;
-			border-radius: 50%;
-			transform: translate(2px, 2px);
-		}
-
-		&::after {
-			width: 1.5px;
-			height: 8.5px;
-			background: #9f979773;
-			transform: rotate(-45deg) translate(2px, 17px);
+		&--open {
+			transform: translateY(-65%) rotate(180deg);
+			color: #0a0000c2;
 		}
 	}
 }

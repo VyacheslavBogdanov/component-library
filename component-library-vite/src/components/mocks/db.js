@@ -51,6 +51,7 @@ const people = [
 	'Афанасьевdiajshdsjadhjsahdlasjhdlajshdasjhdkjsa Н.А.',
 ];
 
+
 const months = [
 	'Январь',
 	'Февраль',
