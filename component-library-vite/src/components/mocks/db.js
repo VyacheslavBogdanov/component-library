@@ -52,7 +52,6 @@ const people = [
 ];
 
 
-
 const months = [
 	'Январь',
 	'Февраль',
@@ -83,11 +82,13 @@ const calendarHeaderItem = [
 	},
 ];
 
-// export const daysConfig = [
-// 	{ key: 'prevMonthDays', class: 'other-month', emitEvent: 'prevMonth' },
-// 	{ key: 'daysInMonth', class: '', emitEvent: 'selectDay' },
-// 	{ key: 'nextMonthDays', class: 'other-month', emitEvent: 'nextMonth' },
-// ];
+const messageTypes = [
+	{ class: 'inform--success', message: 'This is a SUCCESS message' },
+	{ class: 'inform--warning', message: 'This is a WARNING message' },
+	{ class: 'inform--error', message: 'This is an ERROR message' },
+	{ class: 'inform--info', message: ' This is an INFO message' },
+	{ class: 'inform--default', message: ' This is a message' },
+];
 
 const mockAPI = (endpoint) => {
 	return new Promise((resolve, reject) => {
@@ -98,6 +99,8 @@ const mockAPI = (endpoint) => {
 				resolve(calendarHeaderItem);
 			} else if (endpoint === '/days-names') {
 				resolve(daysNames);
+			} else if (endpoint === '/message-types') {
+				resolve(messageTypes);
 			} else {
 				reject({ error: 'Not Found', status: 404 });
 			}

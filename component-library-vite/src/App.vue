@@ -2,14 +2,16 @@
 	<div id="app">
 		<RadioButtonFilter />
 		<Search />
-		<CheckBoxFilter />
-		<DropdownSearch />
-		<!-- <RadioButtonFilter /> -->
-		<!-- <Chips /> -->
-		<!-- <ChipsFilter />
+
 		<DatePicker />
+		<!-- <DropdownWithSearch />
+
+		<CheckboxFilter />
+		<RadioButtonFilter />
+		<Chips />
+		<ChipsFilter /> -->
 		<Informer />
-		<TestComponent />  -->
+
 	</div>
 </template>
 
@@ -20,8 +22,8 @@ import RadioButtonFilter from './components/RadioButton/RadioButtonFilter.vue';
 import CheckBoxFilter from './components/CheckBox/CheckBoxFilter.vue';
 // import Chips from '@/components/Chips/Chips.vue';
 // import ChipsFilter from '@/components/ChipsFilter/ChipsFilter.vue';
-// import DatePicker from '@/components/DatePicker/DatePicker.vue';
-// import Informer from '@/components/Informer/Informer.vue';
+import DatePicker from '@/components/DatePicker/DatePicker.vue';
+import Informer from '@/components/Informer/Informer.vue';
 </script>
 
 <style lang="scss" scoped></style>
