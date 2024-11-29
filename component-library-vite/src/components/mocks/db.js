@@ -51,7 +51,7 @@ const people = [
 	'Афанасьев Н.А.',
 ];
 
-  
+
 
 const months = [
 	'Январь',

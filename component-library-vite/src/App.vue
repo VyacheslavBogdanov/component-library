@@ -1,10 +1,9 @@
 <template>
 	<div id="app">
 		<RadioButtonFilter />
-		<!-- <Search />  -->
+		<Search />
 		<CheckBoxFilter />
-		<!-- <DropdownWithSearch /> -->
-
+		<DropdownSearch />
 		<!-- <RadioButtonFilter /> -->
 		<!-- <Chips /> -->
 		<!-- <ChipsFilter />
@@ -15,11 +14,8 @@
 </template>
 
 <script setup lang="ts">
-// import TestComponent from '@/components/TestComponent/TestComponent.vue';
-
-// import Search from '@/components/Search/Search/SearchForm.vue';
-// import DropdownWithSearch from '@/components/DropdownWithSearch/DropdownWithSearch.vue';
-
+import Search from '@/components/Search/Search/SearchForm.vue';
+import DropdownSearch from '@/components/TestDropdownWithSearch/DropdownSearch/DropdownSearch.vue';
 import RadioButtonFilter from './components/RadioButton/RadioButtonFilter.vue';
 import CheckBoxFilter from './components/CheckBox/CheckBoxFilter.vue';
 // import Chips from '@/components/Chips/Chips.vue';

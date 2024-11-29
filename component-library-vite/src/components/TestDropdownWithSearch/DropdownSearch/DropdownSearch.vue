@@ -5,12 +5,14 @@
 			'searchbox--focused': isFocused,
 			'searchbox--filled': searchQuery,
 		}"
+		ref="searchboxContainer"
 	>
 		<input
 			required
 			type="text"
 			v-model="searchQuery"
 			@focus="handleFocus(true)"
+			@click="showFullList"
 			@blur="handleFocus(false)"
 			:class="{
 				'searchbox__input--has-dropdown': showDropdown,
@@ -23,7 +25,7 @@
 			}"
 			class="searchbox__placeholder"
 		>
-			Поиск
+			Комментарий
 		</label>
 		<div class="searchbox__icon"></div>
 		<DropdownList
@@ -40,7 +42,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { fetchData } from '../../mocks/db.js';
 import { debounce, highlightMatch } from '../utils/utils.js';
-import DropdownList from '../Dropdown.vue/DropdownList.vue';
+import DropdownList from '../DropdownList/DropdownList.vue';
 
 const searchQuery = ref<string>('');
 const filteredList = ref<string[]>([]);
@@ -62,15 +64,18 @@ const updateFilteredList = debounce(() => {
 }, 300);
 
 const showDropdown = computed(() => {
-	return filteredList.value.length > 0 && searchQuery.value.trim().length > 0;
+	return filteredList.value.length > 0;
 });
 
 const handleFocus = (focus: boolean) => {
 	isFocused.value = focus;
-	if (!focus) {
-		searchQuery.value = '';
+	if (!focus && !searchQuery.value.trim()) {
 		filteredList.value = [];
 	}
+};
+
+const showFullList = () => {
+	filteredList.value = [...people.value];
 };
 
 const handleClickOutside = (event: MouseEvent) => {
