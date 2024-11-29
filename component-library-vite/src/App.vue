@@ -1,7 +1,8 @@
 <template>
 	<div id="app">
-		<TestRadioButtonFilter />
+		<RadioButtonFilter />
 		<Search />
+
 		<DatePicker />
 		<!-- <DropdownWithSearch />
 
@@ -16,10 +17,9 @@
 
 <script setup lang="ts">
 import Search from '@/components/Search/Search/SearchForm.vue';
-// import DropdownWithSearch from '@/components/DropdownWithSearch/DropdownWithSearch.vue';
-// import CheckboxFilter from '@/components/CheckboxFilter/CheckboxFilter.vue';
-// import RadioButtonFilter from './components/RadioButtonFilter/RadioButtonFilter.vue';
-import TestRadioButtonFilter from './components/TestRadioButton.vue/TestRadioButtonFilter.vue';
+import DropdownSearch from '@/components/DropdownWithSearch/DropdownSearch/DropdownSearch.vue';
+import RadioButtonFilter from './components/RadioButton/RadioButtonFilter.vue';
+import CheckBoxFilter from './components/CheckBox/CheckBoxFilter.vue';
 // import Chips from '@/components/Chips/Chips.vue';
 // import ChipsFilter from '@/components/ChipsFilter/ChipsFilter.vue';
 import DatePicker from '@/components/DatePicker/DatePicker.vue';
