@@ -5,14 +5,12 @@
 			'searchbox--focused': isFocused,
 			'searchbox--filled': searchQuery,
 		}"
-		ref="searchboxContainer"
 	>
 		<input
 			required
 			type="text"
 			v-model="searchQuery"
 			@focus="handleFocus(true)"
-			@click="showFullList"
 			@blur="handleFocus(false)"
 			:class="{
 				'searchbox__input--has-dropdown': showDropdown,
@@ -52,19 +50,19 @@ const userIsSelecting = ref<boolean>(false);
 const searchboxContainer = ref<HTMLDivElement | null>(null);
 
 const updateFilteredList = debounce(() => {
-	if (searchQuery.value.trim().length > 0) {
+	if (searchQuery.value.trim().length === 0) {
+		filteredList.value = [...people.value];
+	} else {
 		filteredList.value = people.value
 			.filter((name: string) =>
 				name.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
 			)
 			.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-	} else {
-		filteredList.value = [];
 	}
 }, 300);
 
 const showDropdown = computed(() => {
-	return filteredList.value.length > 0;
+	return isFocused.value && filteredList.value.length > 0;
 });
 
 const handleFocus = (focus: boolean) => {
@@ -72,16 +70,15 @@ const handleFocus = (focus: boolean) => {
 		isFocused.value = false;
 		searchQuery.value = '';
 		filteredList.value = [];
+	} else {
+		isFocused.value = true;
+		updateFilteredList();
 	}
-};
-
-const showFullList = () => {
-	filteredList.value = [...people.value];
 };
 
 const handleClickOutside = (event: MouseEvent) => {
 	if (searchboxContainer.value && !searchboxContainer.value.contains(event.target as Node)) {
-		handleFocus(true);
+		handleFocus(false);
 	}
 };
 
@@ -101,7 +98,10 @@ const selectItem = (name: string): void => {
 
 const loadData = async () => {
 	try {
-		people.value = await fetchData('/people');
+		people.value = (await fetchData('/people')).sort((a: string, b: string) =>
+			a.toLowerCase().localeCompare(b.toLowerCase()),
+		);
+		filteredList.value = [...people.value];
 	} catch (error) {
 		console.error('Error loading data:', error);
 	}
@@ -127,28 +127,11 @@ onBeforeUnmount(() => {
 	width: $width-container;
 
 	&--focused {
-		.searchbox__icon {
-			&::before {
-				border-color: $color-border-focus;
-			}
-			&::after {
-				background-color: $color-border-focus;
-			}
-		}
 		.searchbox__input {
 			border-color: $color-border-focus;
 		}
 	}
 	&--filled {
-		.searchbox__icon {
-			&::before {
-				border-color: $color-border-focus;
-			}
-			&::after {
-				background-color: $color-border-focus;
-			}
-		}
-
 		.searchbox__input {
 			border-color: $color-border-focus;
 		}

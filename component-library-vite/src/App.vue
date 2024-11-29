@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import Search from '@/components/Search/Search/SearchForm.vue';
-import DropdownSearch from '@/components/TestDropdownWithSearch/DropdownSearch/DropdownSearch.vue';
+import DropdownSearch from '@/components/DropdownWithSearch/DropdownSearch/DropdownSearch.vue';
 import RadioButtonFilter from './components/RadioButton/RadioButtonFilter.vue';
 import CheckBoxFilter from './components/CheckBox/CheckBoxFilter.vue';
 // import Chips from '@/components/Chips/Chips.vue';
