@@ -1,12 +1,5 @@
 <template>
 	<div id="app">
-		<!-- <DatePicker /> -->
-		<!-- <Search /> -->
-		<!-- <DropdownWithSearch />
-		<CheckboxFilter />
-		<RadioButtonFilter />
-		<ChipsFilter /> -->
-		<!-- <Informer /> -->
 		<Chips />
 	</div>
 </template>
