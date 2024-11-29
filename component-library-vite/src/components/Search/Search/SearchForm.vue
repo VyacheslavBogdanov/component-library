@@ -66,10 +66,12 @@ const showDropdown = computed(() => {
 });
 
 const handleFocus = (focus: boolean) => {
-	isFocused.value = focus;
 	if (!focus) {
+		isFocused.value = false;
 		searchQuery.value = '';
 		filteredList.value = [];
+	} else {
+		isFocused.value = true;
 	}
 };
 

@@ -27,7 +27,7 @@
 		>
 			Комментарий
 		</label>
-		<div class="searchbox__icon"></div>
+		<div class="searchbox__icon" :class="{ 'searchbox__icon--open': showDropdown }">⌃</div>
 		<DropdownList
 			v-if="showDropdown"
 			:items="filteredList"
@@ -68,8 +68,9 @@ const showDropdown = computed(() => {
 });
 
 const handleFocus = (focus: boolean) => {
-	isFocused.value = focus;
-	if (!focus && !searchQuery.value.trim()) {
+	if (!focus) {
+		isFocused.value = false;
+		searchQuery.value = '';
 		filteredList.value = [];
 	}
 };
@@ -80,7 +81,7 @@ const showFullList = () => {
 
 const handleClickOutside = (event: MouseEvent) => {
 	if (searchboxContainer.value && !searchboxContainer.value.contains(event.target as Node)) {
-		handleFocus(false);
+		handleFocus(true);
 	}
 };
 
@@ -200,33 +201,18 @@ onBeforeUnmount(() => {
 
 	&__icon {
 		position: absolute;
-		right: 9px;
+		right: 10px;
 		top: 50%;
-		transform: translateY(-50%);
-		width: 20px;
-		height: 20px;
-		transition: all 0.2s ease;
+		transform: translateY(-35%);
+		font-size: 23px;
+		color: #0a00007d;
+		transition:
+			transform 0.1s ease,
+			color 0.2s ease;
 
-		&::before,
-		&::after {
-			content: '';
-			position: absolute;
-			transition: all 0.2s ease;
-		}
-
-		&::before {
-			width: 8.5px;
-			height: 8.5px;
-			border: 1.5px solid #9f979773;
-			border-radius: 50%;
-			transform: translate(2px, 2px);
-		}
-
-		&::after {
-			width: 1.5px;
-			height: 8.5px;
-			background: #9f979773;
-			transform: rotate(-45deg) translate(2px, 17px);
+		&--open {
+			transform: translateY(-65%) rotate(180deg);
+			color: #0a0000c2;
 		}
 	}
 }

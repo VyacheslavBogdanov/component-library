@@ -36,7 +36,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { fetchData } from '../mocks/db.js';
 import { debounce } from './utils/utils.js';
 import RadioButtonList from './RadioButtonList/RadioButtonList.vue';
-import SearchRadioButton from './SearchRadioButton/SearchRadioButton.vue';
+import SearchRadioButton from './SearchRadiobutton/SearchRadiobutton.vue';
 
 const isDropdownVisible = ref<boolean>(false);
 const searchQuery = ref<string>('');
