@@ -1,4 +1,5 @@
 <template>
+	<h1>CheckboxFilter</h1>
 	<div class="filter" ref="filterContainer">
 		<div :class="['filter__label', { 'filter__label--active': isDropdownVisible }]">
 			Исполнитель

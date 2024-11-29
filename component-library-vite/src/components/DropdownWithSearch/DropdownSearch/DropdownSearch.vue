@@ -1,4 +1,5 @@
 <template>
+	<h1>DropdownSearch</h1>
 	<div
 		class="searchbox"
 		:class="{

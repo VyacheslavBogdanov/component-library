@@ -1,5 +1,5 @@
 <template>
-	<h1>Search</h1>
+	<h1>SearchForm</h1>
 	<div
 		class="searchbox"
 		:class="{
