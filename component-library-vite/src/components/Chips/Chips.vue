@@ -1,52 +1,33 @@
 <template>
-	<div class="Chips">
-		<h1>Chips</h1>
-		<div class="filter-container" ref="filterContainer">
-			<label
-				:class="{
-					'filter-container__label': true,
-					'filter-container__label--active': isDropdownVisible,
-				}"
-				>Исполнитель</label
-			>
-			<div
-				:class="{
-					'filter-container--iconPositionTop': isDropdownVisible,
-					'filter-container--iconPositionDown': !isDropdownVisible,
-				}"
-			>
-				⌃
-			</div>
+	<h1>Chips</h1>
+	<div class="filter" ref="filterContainer">
+		<div :class="['filter__label', { 'filter__label--active': isDropdownVisible }]">
+			Исполнитель
+		</div>
+		<div class="filter__input-wrapper">
 			<input
 				readonly
 				type="text"
-				v-model="displayText"
-				@focus="isDropdownVisible = true"
-				:class="{
-					'filter-container__input': true,
-					'filter-container__input--active': isDropdownVisible,
-				}"
+				class="filter__input"
+				:value="displayText"
+				@focus="toggleDropdown(true)"
+				:class="{ 'filter__input--has-dropdown': isDropdownVisible }"
 			/>
+			<div class="filter__icon" :class="{ 'filter__icon--open': isDropdownVisible }">⌃</div>
+		</div>
+		<div v-if="isDropdownVisible" class="filter__dropdown">
+			<Search v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
 			<Dropdown
-				v-model="searchQuery"
+				:items="itemsToDisplay"
+				v-model="selectedItems"
+				:noResults="noResultsFound"
 				:searchQuery="searchQuery"
-				@showDropdown="(bool: boolean) => (isDropdownVisible = bool)"
-				:isDropdownVisible="isDropdownVisible"
-				:items="items"
-				:checkedItems="checkedItems"
-				@update:checkedItems="(items) => (checkedItems = items)"
-				:filteredList="filteredList"
-				:selectAll="selectAll"
-				@update:selectAll="handleSelectAllUpdate"
-				:handleSelectAll="handleSelectAll"
-				:updateDisplayText="updateDisplayText"
-				:highlightMatch="highlightMatch"
-				:noResultsFound="noResultsFound"
 			/>
 		</div>
 		<ChipsContainer
+			v-if="selectedItems.length > 0"
 			:isDropdownVisible="isDropdownVisible"
-			:checkedItems="checkedItems"
+			:selectedItems="selectedItems"
 			:removeChip="removeChip"
 		/>
 	</div>
@@ -54,182 +35,176 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import { debounce } from './utils/utils';
-import { fetchData } from '../mocks/db';
+import Search from './Search/Search.vue';
 import Dropdown from './Dropdown/Dropdown.vue';
 import ChipsContainer from './ChipsContainer/ChipsContainer.vue';
+import { fetchData } from '../mocks/db.js';
+import { debounce } from './utils/utils.js';
 
 const isDropdownVisible = ref<boolean>(false);
 const searchQuery = ref<string>('');
-const selectAll = ref<boolean>(false);
-const checkedItems = ref<string[]>([]);
-const items = ref<string[]>([]);
+const selectedItems = ref<string[]>([]);
+const people = ref<string[]>([]);
+const filteredList = ref<string[]>([]);
 const noResultsFound = ref<boolean>(false);
-const filteredList = ref<string[]>(items.value);
-const filterContainer = ref<HTMLElement | null>(null);
 
-const loadData = async () => {
-	try {
-		items.value = await fetchData('/people');
-		filteredList.value = [...items.value];
-		noResultsFound.value = filteredList.value.length === 0;
-	} catch (error) {
-		console.error('Error loading data:', error);
+const filterAndSortList = (query: string): string[] => {
+	return people.value
+		.filter((item) => item.toLowerCase().startsWith(query.toLowerCase()))
+		.sort((a, b) => a.localeCompare(b));
+};
+
+const updateFilteredList = debounce(() => {
+	filteredList.value = filterAndSortList(searchQuery.value);
+	noResultsFound.value = filteredList.value.length === 0;
+}, 300);
+
+watch(searchQuery, updateFilteredList);
+
+const displayText = computed(() => {
+	if (selectedItems.value.length === 0) {
+		return 'Не выбрано';
+	} else if (selectedItems.value.length === 1) {
+		return selectedItems.value[0];
+	} else {
+		return `Выбрано ${selectedItems.value.length}`;
+	}
+});
+
+const filterContainer = ref<HTMLElement | null>(null);
+const handleClickOutside = (event: MouseEvent) => {
+	if (
+		filterContainer.value &&
+		!filterContainer.value.contains(event.target as Node) &&
+		!(event.target as HTMLElement).closest('.filter__dropdown')
+	) {
+		isDropdownVisible.value = false;
 	}
 };
 
+const toggleDropdown = (state: boolean) => {
+	isDropdownVisible.value = state;
+
+	if (state) {
+		filteredList.value = filterAndSortList(searchQuery.value);
+		noResultsFound.value = filteredList.value.length === 0;
+	}
+};
+
+const itemsToDisplay = computed<string[]>(() => filteredList.value);
+const showSearch = computed<boolean>(() => people.value.length > 10);
+
+const loadData = async () => {
+	try {
+		people.value = await fetchData('/people');
+		filteredList.value = filterAndSortList('');
+	} catch (error) {
+		console.error('Ошибка загрузки данных:', error);
+	}
+};
+
+const removeChip = (chip: string) => {
+	selectedItems.value = selectedItems.value.filter((item) => item !== chip);
+};
+
 onMounted(() => {
-	loadData();
 	document.addEventListener('mousedown', handleClickOutside);
+	loadData();
 });
 
 onBeforeUnmount(() => {
 	document.removeEventListener('mousedown', handleClickOutside);
 });
-
-watch(searchQuery, () => {
-	updateFilteredList();
-});
-
-const handleClickOutside = (event: MouseEvent) => {
-	if (filterContainer.value && !filterContainer.value.contains(event.target as Node)) {
-		isDropdownVisible.value = false;
-	}
-};
-
-// const updateFilteredList = debounce(() => {
-// 	filteredList.value = items.value.filter((item) =>
-// 		item.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
-// 	);
-
-// 	noResultsFound.value = filteredList.value.length === 0;
-// }, 700);
-
-const updateFilteredList = debounce(() => {
-	filteredList.value = items.value.filter((item) =>
-		item.toLowerCase().startsWith(searchQuery.value.toLowerCase()),
-	);
-	noResultsFound.value = filteredList.value.length === 0;
-
-	// Обновление состояния выбора "Выбрать все" при изменении списка
-	selectAll.value = filteredList.value.every((item) => checkedItems.value.includes(item));
-}, 700);
-
-const displayText = computed(() => {
-	if (checkedItems.value.length === 0) return 'Не выбрано';
-	if (checkedItems.value.length === 1) return checkedItems.value[0];
-	return `Выбрано ${checkedItems.value.length}`;
-});
-
-const highlightMatch = (item: string): string => {
-	if (!searchQuery.value) return item;
-	const regex = new RegExp(`^(${searchQuery.value})`, 'i');
-	return item.replace(regex, '<b>$1</b>');
-};
-
-// const handleSelectAll = () => {
-// 	if (selectAll.value) {
-// 		checkedItems.value = [...filteredList.value];
-// 	} else {
-// 		checkedItems.value = [];
-// 	}
-// };
-
-const handleSelectAll = () => {
-	if (selectAll.value) {
-		// Если выбрано "Выбрать все", добавляем все элементы filteredList в checkedItems
-		checkedItems.value = Array.from(new Set([...checkedItems.value, ...filteredList.value]));
-	} else {
-		// Если снимается "Выбрать все", удаляем элементы filteredList из checkedItems
-		checkedItems.value = checkedItems.value.filter(
-			(item) => !filteredList.value.includes(item),
-		);
-	}
-};
-
-const handleSelectAllUpdate = (value: boolean) => {
-	selectAll.value = value;
-	handleSelectAll();
-};
-
-const updateDisplayText = () => {
-	selectAll.value = checkedItems.value.length === filteredList.value.length;
-};
-
-const removeChip = (chip: string) => {
-	checkedItems.value = checkedItems.value.filter((item) => item !== chip);
-	updateDisplayText();
-};
 </script>
 
 <style lang="scss" scoped>
 @import './utils/variables.scss';
 
-.filter-container {
-	position: relative;
-	width: 450px;
+.filter {
+	width: $width-checkbox;
 	display: flex;
 	flex-direction: column;
-	font-family: $font-allelement;
+	position: relative;
+	margin-top: 24px;
+	margin-bottom: 24px;
 
 	&__label {
-		position: relative;
-		width: min-content;
-		height: 20px;
-		top: 10px;
-		left: 15px;
+		position: absolute;
+		top: -8px;
+		left: 12px;
 		background-color: white;
-		padding: 0 3px;
-		font-size: $font-size;
-		color: $text-color;
+		padding: 0 5px;
+		font-size: 14px;
+		color: #00000094;
+		font-family: $font-allelement;
+		z-index: 2;
 
 		&--active {
 			color: $focus-color;
 		}
 	}
 
-	&--iconPositionTop {
-		position: absolute;
-		right: 15px;
-		top: 44.5px;
-		transform: translateY(-35%);
-		font-size: 25px;
-		font-weight: lighter;
-		color: $icon-color-active;
-		cursor: $cursor;
-		pointer-events: none;
+	&__input-wrapper {
+		position: relative;
+		display: flex;
+		z-index: 1;
 	}
 
-	&--iconPositionDown {
-		position: absolute;
-		right: 15px;
-		top: 44.5px;
-		transform: translateY(-65%) rotate(180deg);
-		font-size: 25px;
-		font-weight: lighter;
-		color: $icon-color;
-		cursor: $cursor;
-		pointer-events: none;
-	}
 	&__input {
 		width: 100%;
 		padding-left: 10px;
-		font-size: $font-size;
-		color: $text-color;
-		border: 1.5px solid $border-color;
+		font-size: 16px;
+		color: #00000094;
+		border: 1.5px solid #9f979773;
 		border-radius: 8px;
 		outline: none;
 		transition: border-color 0.2s;
-		cursor: $cursor;
+		cursor: pointer;
 		box-sizing: border-box;
 		height: $height-input;
 		padding-right: 40px;
 
-		&--active {
+		&--has-dropdown {
 			border-bottom: none;
 			border-radius: 8px 8px 0 0;
 			border-color: $focus-color;
 		}
+	}
+
+	&__icon {
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-35%);
+		font-size: 23px;
+		color: #0a00007d;
+		transition:
+			transform 0.1s ease,
+			color 0.2s ease;
+
+		&--open {
+			transform: translateY(-65%) rotate(180deg);
+			color: #0a0000c2;
+		}
+	}
+
+	&__dropdown {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background-color: white;
+		border: 1.5px solid $focus-color;
+		border-radius: 0 0 8px 8px;
+		min-height: 180px;
+		max-height: 400px;
+		overflow-y: auto;
+		width: 100%;
+		transition: border-color 0.2s;
+		border-top: #ffffff;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		z-index: 10;
 	}
 }
 </style>

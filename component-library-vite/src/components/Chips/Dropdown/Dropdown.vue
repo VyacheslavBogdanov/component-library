@@ -1,227 +1,337 @@
+<!--
 <template>
-	<div v-if="isDropdownVisible" class="dropdown" @mousedown="handleDropdownClick">
-		<div class="search-wrapper" v-if="showSearch">
-			<input
-				class="search"
-				type="text"
-				placeholder="Поиск"
-				:value="modelValue"
-				@input="handleInput"
-				@focus="emit('showDropdown', true)"
-			/>
-			<span class="searchicon"></span>
-		</div>
-		<ul class="dropdown-list">
-			<li v-if="itemsToDisplay.length > 0" class="dropdown-list__item">
-				<label class="dropdown-list__label">
+	<div class="checkbox-list-wrapper">
+		<ul class="checkbox-list">
+			<li v-if="!noResults" class="checkbox-list__item">
+				<label class="checkbox-list__label">
 					<input
-						class="dropdown-list__checkbox"
 						type="checkbox"
-						:checked="selectAll"
-						@change="emit('update:selectAll', !selectAll)"
+						class="checkbox-list__input"
+						:checked="areAllItemsSelected"
+						@change="toggleSelectAll"
 					/>
-					<span class="dropdown-list__text">Все</span>
+					<span class="checkbox-list__text">Все</span>
 				</label>
 			</li>
-			<li v-for="(item, index) in itemsToDisplay" :key="index" class="dropdown-list__item">
-				<label class="dropdown-list__label">
+
+			<li v-for="(item, index) in highlightedItems" :key="index" class="checkbox-list__item">
+				<label class="checkbox-list__label">
 					<input
-						class="dropdown-list__checkbox"
 						type="checkbox"
-						:checked="checkedItems.includes(item)"
-						@change="toggleItem(item)"
+						class="checkbox-list__input"
+						:checked="localSelectedItems.includes(item.original)"
+						@change="(event) => onCheckboxChange(event, item.original)"
 					/>
-					<span class="dropdown-list__text" v-html="highlightMatch(item)"></span>
+					<span class="checkbox-list__text">
+						<span
+							v-for="(part, idx) in item.highlightedText"
+							:key="idx"
+							class="checkbox-list__highlighted-text"
+							:class="{ 'checkbox-list__highlighted-text--bold': part.highlighted }"
+						>
+							{{ part.text }}
+						</span>
+					</span>
 				</label>
 			</li>
 		</ul>
-		<div v-if="noResultsFound" class="no-results">Результаты не найдены</div>
+		<div v-if="noResults" class="checkbox-list__no-results">Результаты не найдены</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { handleDropdownClick } from '../utils/utils';
+import { ref, defineProps, defineEmits, computed } from 'vue';
+import type { PropType } from 'vue';
+import { highlightMatch } from '../utils/utils';
 
-const props = defineProps<{
-	modelValue: string;
-	isDropdownVisible: boolean;
-	items: string[];
-	checkedItems: string[];
-	searchQuery: string;
-	filteredList: string[];
-	selectAll: boolean;
-	highlightMatch: any;
-	noResultsFound: boolean;
-}>();
+interface HighlightedText {
+	text: string;
+	highlighted: boolean;
+}
 
-const emit = defineEmits<{
-	(event: 'showDropdown', value: boolean): void;
-	(event: 'update:modelValue', value: string): void;
-	(event: 'update:selectAll', value: boolean): void;
-	(event: 'update:checkedItems', value: string[]): void;
-}>();
+interface HighlightedItem {
+	original: string;
+	highlightedText: HighlightedText[];
+}
 
-// console.log('ITEMS', props.items);
-// console.log('filteredList', props.filteredList);
-
-const itemsToDisplay = computed(() => {
-	if (props.filteredList.length <= 10) return props.filteredList;
-
-	const selectedItems = props.filteredList
-		.filter((item) => props.checkedItems.includes(item))
-		.sort((a, b) => a.localeCompare(b));
-
-	const unselectedItems = props.filteredList.filter((item) => !props.checkedItems.includes(item));
-
-	return [...selectedItems, ...unselectedItems];
+const props = defineProps({
+	items: {
+		type: Array as PropType<readonly string[]>,
+		required: true,
+	},
+	modelValue: {
+		type: Array as PropType<string[]>,
+		default: () => [],
+	},
+	noResults: {
+		type: Boolean,
+		default: false,
+	},
+	searchQuery: {
+		type: String,
+		default: '',
+	},
 });
 
-// console.log('itemsToDisplay', itemsToDisplay);
+const emit = defineEmits<{
+	(e: 'update:modelValue', value: string[]): void;
+}>();
 
-const showSearch = computed(() => props.items.length > 10);
+const localSelectedItems = ref<string[]>([...props.modelValue]);
+const areAllItemsSelected = computed(() => {
+	return (
+		props.items.length > 0 &&
+		props.items.every((item) => localSelectedItems.value.includes(item))
+	);
+});
 
-const toggleItem = (item: string) => {
-	const newCheckedItems = props.checkedItems.includes(item)
-		? props.checkedItems.filter((checkedItem) => checkedItem !== item)
-		: [...props.checkedItems, item];
+const highlightedItems = computed<HighlightedItem[]>(() => {
+	return props.items.map((item) => {
+		const highlightedText = highlightMatch(item, props.searchQuery);
+		return {
+			original: item,
+			highlightedText,
+		};
+	});
+});
 
-	emit('update:checkedItems', newCheckedItems);
+const toggleSelectAll = () => {
+	if (areAllItemsSelected.value) {
+		localSelectedItems.value = [];
+	} else {
+		localSelectedItems.value = [...props.items];
+	}
+	emit('update:modelValue', localSelectedItems.value);
 };
 
-const handleInput = (event: Event) => {
-	const target = event.target as HTMLInputElement | null;
-	if (target) {
-		emit('update:modelValue', target.value);
+const onCheckboxChange = (event: Event, item: string) => {
+	const isChecked = (event.target as HTMLInputElement).checked;
+	if (isChecked) {
+		localSelectedItems.value.push(item);
+	} else {
+		localSelectedItems.value = localSelectedItems.value.filter((selected) => selected !== item);
 	}
+	emit('update:modelValue', localSelectedItems.value);
 };
 </script>
 
 <style lang="scss" scoped>
 @import '../utils/variables.scss';
 
-.dropdown {
-	position: relative;
-	background-color: white;
-	border: 1.5px solid $focus-color;
-	border-radius: 0 0 8px 8px;
-	min-height: 180px;
-	max-height: 400px;
-	overflow-y: auto;
-	width: 100%;
-	transition:
-		border-color 0.2s,
-		box-shadow 0.2s;
-	border-top: #ffffff;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
+.checkbox-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
 
-	// Разобраться с блоком .search
+	&__item {
+		display: flex;
+		align-items: center;
+		padding: 8px;
+		cursor: pointer;
+		transition: background-color 0.2s;
 
-	.search-wrapper {
-		position: relative;
-		width: 95%;
-		margin: 7px 0 0 10px;
+		&:hover {
+			background-color: #f5f5f5;
+		}
 	}
 
-	.search {
+	&__label {
+		display: flex;
+		align-items: center;
 		width: 100%;
-		height: $height-input;
-		border: 1.5px solid $border-color;
-		border-radius: 8px;
-		outline: none;
-		padding-right: 40px;
-		padding-left: 10px;
-		box-sizing: border-box;
-		font-size: $font-size;
+		cursor: pointer;
+	}
 
-		&:focus {
-			border-color: $focus-color;
+	&__input {
+		margin-right: 8px;
+		cursor: pointer;
+	}
 
-			~ .searchicon {
-				&::before {
-					border-color: $focus-color;
-				}
-				&::after {
-					background: $focus-color;
-				}
-			}
+	&__text {
+		font-size: 16px;
+		color: #333;
+	}
+
+	&__highlighted-text {
+		font-weight: normal;
+
+		&--bold {
+			font-weight: bold;
 		}
 	}
 
-	.searchicon {
-		position: absolute;
-		right: 10px;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 30px;
-		height: 30px;
-		display: grid;
-		place-items: center;
-		pointer-events: none;
-
-		&::before {
-			content: '';
-			width: 9.5px;
-			height: 9.5px;
-			border: 1.5px solid $border-color;
-			border-radius: 50%;
-			transition: border-color 0.2s;
-			position: absolute;
-			transform: translate(-2px, -2px);
-		}
-
-		&::after {
-			content: '';
-			position: absolute;
-			width: 1.5px;
-			height: 9.5px;
-			background: $border-color;
-			transition: border-color 0.2s;
-			transform: rotate(-45deg) translate(-0px, 7px);
-		}
-	}
-
-	// Разобраться с блоком .search
-
-	.dropdown-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		width: 100%;
-
-		&__item {
-			cursor: $cursor;
-			padding: 8px;
-			margin: 0;
-			text-align: start;
-			position: relative;
-
-			&:hover {
-				background-color: $hover-background;
-			}
-		}
-
-		&__label {
-			cursor: $cursor;
-		}
-
-		&__checkbox {
-			cursor: $cursor;
-		}
-
-		// b {
-		// 	font-weight: bold;
-		// }
+	&__no-results {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		text-align: center;
+		color: #00000094;
+		font-size: 16px;
+		font-family: $font-allelement;
 	}
 }
+</style> -->
 
-.no-results {
-	color: $text-color;
-	position: relative;
-	margin: auto;
-	font-size: $font-size;
-	font-family: $font-allelement;
+<template>
+	<ul class="checkbox-list">
+		<li v-if="!noResults" class="checkbox-list__item">
+			<label class="checkbox-list__label">
+				<input
+					type="checkbox"
+					class="checkbox-list__input"
+					:checked="areAllItemsSelected"
+					@change="toggleSelectAll"
+				/>
+				<span class="checkbox-list__text">Все</span>
+			</label>
+		</li>
+
+		<li v-for="item in highlightedItems" :key="item.original" class="checkbox-list__item">
+			<label class="checkbox-list__label">
+				<input
+					type="checkbox"
+					class="checkbox-list__input"
+					:checked="localSelectedItems.includes(item.original)"
+					@change="(event) => onCheckboxChange(event, item.original)"
+				/>
+				<span class="checkbox-list__text">
+					<span
+						v-for="(part, idx) in item.highlightedText"
+						:key="idx"
+						class="checkbox-list__highlighted-text"
+						:class="{ 'checkbox-list__highlighted-text--bold': part.highlighted }"
+					>
+						{{ part.text }}
+					</span>
+				</span>
+			</label>
+		</li>
+	</ul>
+	<div v-if="noResults" class="checkbox-list__no-results">Результаты не найдены</div>
+</template>
+
+<script setup lang="ts">
+import { ref, defineProps, defineEmits, computed } from 'vue';
+import { highlightMatch } from '../utils/utils';
+
+interface HighlightedText {
+	text: string;
+	highlighted: boolean;
+}
+
+interface HighlightedItem {
+	original: string;
+	highlightedText: HighlightedText[];
+}
+
+const props = defineProps<{
+	items: readonly string[];
+	modelValue: string[];
+	noResults: boolean;
+	searchQuery: string;
+}>();
+
+const emit = defineEmits<{
+	(e: 'update:modelValue', value: string[]): void;
+}>();
+
+const localSelectedItems = ref<string[]>([...props.modelValue]);
+
+const areAllItemsSelected = computed<boolean>(() => {
+	return (
+		props.items.length > 0 &&
+		props.items.every((item) => localSelectedItems.value.includes(item))
+	);
+});
+
+const highlightedItems = computed<HighlightedItem[]>(() => {
+	const selectedItems = [...props.items]
+		.filter((item) => localSelectedItems.value.includes(item))
+		.sort((a, b) => a.localeCompare(b));
+
+	const unselectedItems = [...props.items]
+		.filter((item) => !localSelectedItems.value.includes(item))
+		.sort((a, b) => a.localeCompare(b));
+
+	const sortedItems = [...selectedItems, ...unselectedItems];
+	return sortedItems.map((item) => ({
+		original: item,
+		highlightedText: highlightMatch(item, props.searchQuery),
+	}));
+});
+
+const toggleSelectAll = (): void => {
+	if (areAllItemsSelected.value) {
+		localSelectedItems.value = [];
+	} else {
+		localSelectedItems.value = [...props.items];
+	}
+	emit('update:modelValue', localSelectedItems.value);
+};
+
+const onCheckboxChange = (event: Event, item: string): void => {
+	const isChecked = (event.target as HTMLInputElement).checked;
+	if (isChecked) {
+		localSelectedItems.value.push(item);
+	} else {
+		localSelectedItems.value = localSelectedItems.value.filter((selected) => selected !== item);
+	}
+	emit('update:modelValue', localSelectedItems.value);
+};
+</script>
+
+<style lang="scss" scoped>
+@import '../utils/variables.scss';
+
+.checkbox-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+
+	&__item {
+		display: flex;
+		align-items: center;
+		padding: 8px;
+		cursor: pointer;
+		transition: background-color 0.2s;
+
+		&:hover {
+			background-color: #f5f5f5;
+		}
+	}
+
+	&__label {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		cursor: pointer;
+	}
+
+	&__input {
+		margin-right: 8px;
+		cursor: pointer;
+	}
+
+	&__text {
+		font-size: 16px;
+		color: #333;
+	}
+
+	&__highlighted-text {
+		font-weight: normal;
+
+		&--bold {
+			font-weight: bold;
+		}
+	}
+
+	&__no-results {
+		color: #00000094;
+		position: relative;
+		margin: auto;
+		font-size: 16px;
+		font-family: $font-allelement;
+	}
 }
 </style>
