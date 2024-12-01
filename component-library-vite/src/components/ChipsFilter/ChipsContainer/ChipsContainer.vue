@@ -3,15 +3,16 @@
 		<div
 			v-for="(chip, index) in props.selectedItems"
 			:key="index"
-			class="chips-container__chip"
+			:class="[
+				'chips-container__chip',
+				{ 'chips-container__chip--active': activeChipIndices.includes(index) },
+			]"
 			@mouseenter="showTooltip(chip, $event)"
 			@mousemove="moveTooltip($event)"
 			@mouseleave="hideTooltip"
+			@click="toggleChipFilter(index)"
 		>
 			<span class="chips-container__chip-content">{{ chip }}</span>
-			<button class="chips-container__delete-chip" @click="props.removeChip(chip)">
-				<div class="chips-container__delete-chip-icon">✕</div>
-			</button>
 		</div>
 		<span v-if="tooltipText" :style="tooltipStyle" class="tooltip">{{ tooltipText }}</span>
 	</div>
@@ -22,9 +23,9 @@ import { ref } from 'vue';
 const props = defineProps<{
 	isDropdownVisible: boolean;
 	selectedItems: string[];
-	removeChip: any;
 }>();
 
+const activeChipIndices = ref<number[]>([]);
 const tooltipText = ref<string | null>(null);
 const tooltipStyle = ref<Record<string, string>>({});
 
@@ -68,6 +69,15 @@ const updateTooltipPosition = (event: MouseEvent) => {
 		top: `${top}px`,
 	};
 };
+
+const toggleChipFilter = (index: number) => {
+	const currentIndex = activeChipIndices.value.indexOf(index);
+	if (currentIndex === -1) {
+		activeChipIndices.value.push(index);
+	} else {
+		activeChipIndices.value.splice(currentIndex, 1);
+	}
+};
 </script>
 <style lang="scss" scoped>
 @import '../utils/variables.scss';
@@ -84,7 +94,7 @@ const updateTooltipPosition = (event: MouseEvent) => {
 		position: relative;
 		display: flex;
 		align-items: center;
-		padding: 0 0 0 8px;
+		padding: 0 8px 0 8px;
 		height: 23px;
 		max-width: 170px;
 		background-color: #e0e0e0;
@@ -94,10 +104,11 @@ const updateTooltipPosition = (event: MouseEvent) => {
 		white-space: nowrap;
 		font-size: 16px;
 		color: #333;
-		cursor: default;
+		cursor: pointer;
 
-		&:hover {
-			background-color: $chip-hover-bg-color;
+		&--active {
+			background-color: rgba(73, 73, 214, 0.962);
+			color: rgb(230, 220, 220);
 		}
 
 		&:hover .tooltip {
@@ -109,28 +120,6 @@ const updateTooltipPosition = (event: MouseEvent) => {
 		user-select: none;
 		overflow: hidden;
 		text-overflow: ellipsis;
-	}
-
-	&__delete-chip {
-		background: none;
-		border: none;
-		color: $icon-color;
-		font-size: 9px;
-		font-weight: bold;
-		cursor: pointer;
-		margin-left: 8px;
-	}
-
-	&__delete-chip-icon {
-		height: 14px;
-		width: 14px;
-		border: none;
-		border-radius: 50%;
-		background-color: rgb(88, 85, 85);
-		color: #e0e0e0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
 	}
 }
 
