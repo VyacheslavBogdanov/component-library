@@ -38,7 +38,7 @@ import Search from './Search/Search.vue';
 import Dropdown from './Dropdown/Dropdown.vue';
 import ChipsContainer from './ChipsContainer/ChipsContainer.vue';
 import { fetchData } from '../mocks/db.js';
-import { debounce } from './utils/utils.js';
+import { debounce } from '../ChipsFilter/utils/utils.js';
 
 const isDropdownVisible = ref<boolean>(false);
 const searchQuery = ref<string>('');
