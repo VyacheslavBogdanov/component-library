@@ -8,12 +8,11 @@
 			<input
 				readonly
 				type="text"
-				class="filter__input"
 				:value="displayText"
 				@focus="toggleDropdown(true)"
-				:class="{ 'filter__input--has-dropdown': isDropdownVisible }"
+				:class="['filter__input', { 'filter__input--has-dropdown': isDropdownVisible }]"
 			/>
-			<div class="filter__icon" :class="{ 'filter__icon--open': isDropdownVisible }">⌃</div>
+			<div :class="['filter__icon', { 'filter__icon--open': isDropdownVisible }]">⌃</div>
 		</div>
 		<div v-if="isDropdownVisible" class="filter__dropdown">
 			<Search v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
@@ -47,6 +46,7 @@ const selectedItems = ref<string[]>([]);
 const people = ref<string[]>([]);
 const filteredList = ref<string[]>([]);
 const noResultsFound = ref<boolean>(false);
+const filterContainer = ref<HTMLElement | null>(null);
 
 const filterAndSortList = (query: string): string[] => {
 	return people.value
@@ -71,7 +71,6 @@ const displayText = computed(() => {
 	}
 });
 
-const filterContainer = ref<HTMLElement | null>(null);
 const handleClickOutside = (event: MouseEvent) => {
 	if (
 		filterContainer.value &&
@@ -127,6 +126,7 @@ onBeforeUnmount(() => {
 	position: relative;
 	margin-top: 24px;
 	margin-bottom: 24px;
+	font-family: $font-allelement;
 
 	&__label {
 		position: absolute;
@@ -136,7 +136,6 @@ onBeforeUnmount(() => {
 		padding: 0 5px;
 		font-size: 14px;
 		color: #00000094;
-		font-family: $font-allelement;
 		z-index: 2;
 
 		&--active {

@@ -156,7 +156,6 @@ const onCheckboxChange = (event: Event, item: string): void => {
 		position: relative;
 		margin: auto;
 		font-size: 16px;
-		font-family: $font-allelement;
 	}
 }
 </style>

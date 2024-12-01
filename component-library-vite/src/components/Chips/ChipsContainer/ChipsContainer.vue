@@ -1,7 +1,7 @@
 <template>
-	<div v-if="!isDropdownVisible" class="chips-container">
+	<div v-if="!props.isDropdownVisible" class="chips-container">
 		<div
-			v-for="(chip, index) in selectedItems"
+			v-for="(chip, index) in props.selectedItems"
 			:key="index"
 			class="chips-container__chip"
 			@mouseenter="showTooltip(chip, $event)"
@@ -9,7 +9,7 @@
 			@mouseleave="hideTooltip"
 		>
 			<span class="chips-container__chip-content">{{ chip }}</span>
-			<button class="chips-container__delete-chip" @click="removeChip(chip)">
+			<button class="chips-container__delete-chip" @click="props.removeChip(chip)">
 				<div class="chips-container__delete-chip-icon">✕</div>
 			</button>
 		</div>
@@ -21,12 +21,9 @@
 import { ref } from 'vue';
 const props = defineProps<{
 	isDropdownVisible: boolean;
-
 	selectedItems: string[];
 	removeChip: any;
 }>();
-
-const emit = defineEmits<{}>();
 
 const tooltipText = ref<string | null>(null);
 const tooltipStyle = ref<Record<string, string>>({});
@@ -50,8 +47,8 @@ const hideTooltip = () => {
 
 const updateTooltipPosition = (event: MouseEvent) => {
 	tooltipStyle.value = {
-		left: `${event.pageX + 10}px`,
-		top: `${event.pageY + 10}px`,
+		left: `${event.pageX + 5}px`,
+		top: `${event.pageY - 195}px`,
 	};
 };
 </script>
@@ -64,7 +61,7 @@ const updateTooltipPosition = (event: MouseEvent) => {
 	width: 600px;
 	overflow-y: auto;
 	gap: 8px;
-	margin: 12px 0 0 16px;
+	margin-top: 12px;
 
 	&__chip {
 		position: relative;
