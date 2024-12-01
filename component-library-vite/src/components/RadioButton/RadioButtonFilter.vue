@@ -1,5 +1,5 @@
 <template>
-	<h1>ChipsFilter</h1>
+	<h1>RadioButtonFilter</h1>
 	<div class="filter" ref="filterContainer">
 		<div :class="['filter__label', { 'filter__label--active': isDropdownVisible }]">
 			Исполнитель
@@ -8,45 +8,43 @@
 			<input
 				readonly
 				type="text"
+				class="filter__input"
 				:value="displayText"
 				@focus="toggleDropdown(true)"
-				:class="['filter__input', { 'filter__input--has-dropdown': isDropdownVisible }]"
+				:class="{ 'filter__input--has-dropdown': isDropdownVisible }"
 			/>
-			<div :class="['filter__icon', { 'filter__icon--open': isDropdownVisible }]">⌃</div>
+			<div class="filter__icon" :class="{ 'filter__icon--open': isDropdownVisible }">⌃</div>
 		</div>
 		<div v-if="isDropdownVisible" class="filter__dropdown">
-			<Search v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
-			<Dropdown
+			<SearchRadioButton
+				v-if="showSearch"
+				v-model="searchQuery"
+				@focus="toggleDropdown(true)"
+			/>
+			<RadioButtonList
 				:items="itemsToDisplay"
-				v-model="selectedItems"
+				v-model="selectedItem"
 				:noResults="noResultsFound"
+				@item-selected="onItemSelected"
 				:searchQuery="searchQuery"
 			/>
 		</div>
-		<ChipsContainer
-			v-if="selectedItems.length > 0"
-			:isDropdownVisible="isDropdownVisible"
-			:selectedItems="selectedItems"
-			:removeChip="removeChip"
-		/>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import Search from './Search/Search.vue';
-import Dropdown from './Dropdown/Dropdown.vue';
-import ChipsContainer from './ChipsContainer/ChipsContainer.vue';
 import { fetchData } from '../mocks/db.js';
 import { debounce } from './utils/utils.js';
+import RadioButtonList from './RadioButtonList/RadioButtonList.vue';
+import SearchRadioButton from './SearchRadiobutton/SearchRadiobutton.vue';
 
 const isDropdownVisible = ref<boolean>(false);
 const searchQuery = ref<string>('');
-const selectedItems = ref<string[]>([]);
+const selectedItem = ref<string | undefined>(undefined);
 const people = ref<string[]>([]);
 const filteredList = ref<string[]>([]);
 const noResultsFound = ref<boolean>(false);
-const filterContainer = ref<HTMLElement | null>(null);
 
 const filterAndSortList = (query: string): string[] => {
 	return people.value
@@ -61,16 +59,9 @@ const updateFilteredList = debounce(() => {
 
 watch(searchQuery, updateFilteredList);
 
-const displayText = computed(() => {
-	if (selectedItems.value.length === 0) {
-		return 'Не выбрано';
-	} else if (selectedItems.value.length === 1) {
-		return selectedItems.value[0];
-	} else {
-		return `Выбрано ${selectedItems.value.length}`;
-	}
-});
+const displayText = computed(() => selectedItem.value || 'Не выбрано');
 
+const filterContainer = ref<HTMLElement | null>(null);
 const handleClickOutside = (event: MouseEvent) => {
 	if (
 		filterContainer.value &&
@@ -80,7 +71,6 @@ const handleClickOutside = (event: MouseEvent) => {
 		isDropdownVisible.value = false;
 	}
 };
-
 const toggleDropdown = (state: boolean) => {
 	isDropdownVisible.value = state;
 
@@ -91,7 +81,7 @@ const toggleDropdown = (state: boolean) => {
 };
 
 const itemsToDisplay = computed<string[]>(() => filteredList.value);
-const showSearch = computed<boolean>(() => people.value.length > 10);
+const showSearch = computed(() => people.value.length > 10);
 
 const loadData = async () => {
 	try {
@@ -102,8 +92,9 @@ const loadData = async () => {
 	}
 };
 
-const removeChip = (chip: string) => {
-	selectedItems.value = selectedItems.value.filter((item) => item !== chip);
+const onItemSelected = (item: string) => {
+	selectedItem.value = item;
+	isDropdownVisible.value = false;
 };
 
 onMounted(() => {
@@ -117,8 +108,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-@import './utils/variables.scss';
-
+@import './utils/style-variables.scss';
 .filter {
 	width: $width-checkbox;
 	display: flex;
@@ -126,7 +116,6 @@ onBeforeUnmount(() => {
 	position: relative;
 	margin-top: 24px;
 	margin-bottom: 24px;
-	font-family: $font-allelement;
 
 	&__label {
 		position: absolute;
@@ -136,6 +125,7 @@ onBeforeUnmount(() => {
 		padding: 0 5px;
 		font-size: 14px;
 		color: #00000094;
+		font-family: $font-allelement;
 		z-index: 2;
 
 		&--active {

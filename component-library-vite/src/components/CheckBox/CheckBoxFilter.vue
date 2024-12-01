@@ -1,5 +1,5 @@
 <template>
-	<h1>ChipsFilter</h1>
+	<h1>CheckboxFilter</h1>
 	<div class="filter" ref="filterContainer">
 		<div :class="['filter__label', { 'filter__label--active': isDropdownVisible }]">
 			Исполнитель
@@ -8,35 +8,29 @@
 			<input
 				readonly
 				type="text"
+				class="filter__input"
 				:value="displayText"
 				@focus="toggleDropdown(true)"
-				:class="['filter__input', { 'filter__input--has-dropdown': isDropdownVisible }]"
+				:class="{ 'filter__input--has-dropdown': isDropdownVisible }"
 			/>
-			<div :class="['filter__icon', { 'filter__icon--open': isDropdownVisible }]">⌃</div>
+			<div class="filter__icon" :class="{ 'filter__icon--open': isDropdownVisible }">⌃</div>
 		</div>
 		<div v-if="isDropdownVisible" class="filter__dropdown">
-			<Search v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
-			<Dropdown
+			<SearchCheckBox v-if="showSearch" v-model="searchQuery" @focus="toggleDropdown(true)" />
+			<CheckBoxList
 				:items="itemsToDisplay"
 				v-model="selectedItems"
 				:noResults="noResultsFound"
 				:searchQuery="searchQuery"
 			/>
 		</div>
-		<ChipsContainer
-			v-if="selectedItems.length > 0"
-			:isDropdownVisible="isDropdownVisible"
-			:selectedItems="selectedItems"
-			:removeChip="removeChip"
-		/>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import Search from './Search/Search.vue';
-import Dropdown from './Dropdown/Dropdown.vue';
-import ChipsContainer from './ChipsContainer/ChipsContainer.vue';
+import SearchCheckBox from './SearchCheckBox/SearchCheckBox.vue';
+import CheckBoxList from './CheckBoxList/CheckBoxList.vue';
 import { fetchData } from '../mocks/db.js';
 import { debounce } from './utils/utils.js';
 
@@ -46,7 +40,6 @@ const selectedItems = ref<string[]>([]);
 const people = ref<string[]>([]);
 const filteredList = ref<string[]>([]);
 const noResultsFound = ref<boolean>(false);
-const filterContainer = ref<HTMLElement | null>(null);
 
 const filterAndSortList = (query: string): string[] => {
 	return people.value
@@ -71,6 +64,7 @@ const displayText = computed(() => {
 	}
 });
 
+const filterContainer = ref<HTMLElement | null>(null);
 const handleClickOutside = (event: MouseEvent) => {
 	if (
 		filterContainer.value &&
@@ -102,10 +96,6 @@ const loadData = async () => {
 	}
 };
 
-const removeChip = (chip: string) => {
-	selectedItems.value = selectedItems.value.filter((item) => item !== chip);
-};
-
 onMounted(() => {
 	document.addEventListener('mousedown', handleClickOutside);
 	loadData();
@@ -117,7 +107,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-@import './utils/variables.scss';
+@import './utils/style-variables.scss';
 
 .filter {
 	width: $width-checkbox;
@@ -126,7 +116,6 @@ onBeforeUnmount(() => {
 	position: relative;
 	margin-top: 24px;
 	margin-bottom: 24px;
-	font-family: $font-allelement;
 
 	&__label {
 		position: absolute;
@@ -136,6 +125,7 @@ onBeforeUnmount(() => {
 		padding: 0 5px;
 		font-size: 14px;
 		color: #00000094;
+		font-family: $font-allelement;
 		z-index: 2;
 
 		&--active {
